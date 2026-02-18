@@ -250,12 +250,18 @@
 
     /* ── Loading / overlay ── */
     #loading {
-      position: fixed; inset: 0;
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      left: var(--sidebar-w);          /* 사이드바 오른쪽부터 덮음 */
       background: var(--bg);
       display: flex; align-items: center; justify-content: center;
       flex-direction: column; gap: 1rem; color: var(--muted);
       z-index: 9999;
     }
+    @media (max-width: 768px) {
+      #loading { left: 0; }             /* 모바일: 전체 덮음 */
+    }
+    #view-loader { display: none; }     /* JS로 flex 전환 */
     .spinner {
       width: 32px; height: 32px;
       border: 3px solid var(--border);
@@ -283,6 +289,162 @@
       z-index: 199;
     }
     .sidebar-overlay.show { display: block; }
+
+    /* ── Quiz ── */
+    .quiz-wrap {
+      max-width: 700px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .quiz-card-dark {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+    }
+    .quiz-category-badge, .quiz-difficulty-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      margin-bottom: 0.3rem;
+      margin-right: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .quiz-category-badge { background: #001a2e; color: var(--blue); border: 1px solid var(--blue); }
+    .quiz-difficulty-badge.easy   { background: #0d2d1a; color: var(--green); border: 1px solid var(--green); }
+    .quiz-difficulty-badge.medium { background: #2d2200; color: var(--gold);  border: 1px solid var(--gold);  }
+    .quiz-difficulty-badge.hard   { background: #2d0d0d; color: var(--red);   border: 1px solid var(--red);   }
+    .quiz-question {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #e6edf3;
+      line-height: 1.65;
+      margin: 1.2rem 0 1.8rem;
+      min-height: 70px;
+    }
+    .quiz-answers {
+      display: flex;
+      gap: 1rem;
+    }
+    .quiz-ans-btn {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 1.2rem 1rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+    }
+    .quiz-ans-btn:hover:not(:disabled) { transform: translateY(-3px); }
+    .quiz-ans-btn:disabled { cursor: default; }
+    .quiz-o {
+      background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(0,184,148,.35);
+    }
+    .quiz-x {
+      background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(108,92,231,.35);
+    }
+    .quiz-ans-symbol { font-size: 2.5rem; line-height: 1; }
+    .quiz-ans-label  { font-size: 0.85rem; opacity: .9; }
+    .quiz-result {
+      margin-top: 1.5rem;
+    }
+    .quiz-result-msg {
+      font-size: 1.35rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .quiz-result-msg.correct   { color: var(--green); background: #0d2d1a; }
+    .quiz-result-msg.incorrect { color: var(--red);   background: #2d0d0d; }
+    .quiz-explanation {
+      font-size: 0.9rem;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+    }
+    .quiz-next-btn {
+      display: block;
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #40C4FF 0%, #0090d4 100%);
+      color: #0d1117;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .quiz-next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(64,196,255,.3); }
+    .quiz-stats-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .quiz-stat { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; flex: 1; min-width: 60px; }
+    .quiz-stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+    .quiz-stat-val   { font-size: 1.4rem; font-weight: 700; color: #e6edf3; }
+    .quiz-reset-btn {
+      margin-left: auto;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .quiz-reset-btn:hover { border-color: var(--red); color: var(--red); }
+    .quiz-filter-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .quiz-filter-label { font-size: 0.78rem; color: var(--muted); }
+    .quiz-filter-bar select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .quiz-answers { flex-direction: column; }
+      .quiz-question { font-size: 1.05rem; }
+    }
   </style>
 </head>
 <body>
@@ -308,6 +470,13 @@
     <button class="nav-item" data-view="fed">
       <span class="nav-icon">📈</span>
       <span data-i18n="navFed">기준금리 vs S&amp;P 500</span>
+    </button>
+
+    <div class="nav-section" data-i18n="navSectionQuiz">경제 퀴즈</div>
+
+    <button class="nav-item" data-view="quiz">
+      <span class="nav-icon">🎯</span>
+      <span data-i18n="navQuiz">O/X 퀴즈</span>
     </button>
 
     <div class="sidebar-footer">
@@ -386,7 +555,17 @@
     </div>
 
     <!-- Charts -->
-    <div class="charts">
+    <div class="charts" style="position:relative;">
+      <!-- 뷰 전환 중 차트 영역만 덮는 로딩 오버레이 -->
+      <div id="view-loader" style="
+        display:none; position:absolute; inset:0; z-index:100;
+        background:rgba(13,17,23,0.75); backdrop-filter:blur(2px);
+        align-items:center; justify-content:center; flex-direction:column; gap:0.8rem;
+        color:var(--muted); font-size:0.85rem;">
+        <div class="spinner"></div>
+        <span id="view-loader-text">로딩 중…</span>
+      </div>
+
       <div class="chart-card">
         <div class="chart-title" id="title-main">—</div>
         <div id="chart-main"></div>
@@ -398,6 +577,61 @@
       <div class="chart-card">
         <div class="chart-title" id="title-scatter">—</div>
         <div id="chart-scatter"></div>
+      </div>
+    </div>
+
+    <!-- ── 퀴즈 뷰 ── -->
+    <div id="quiz-view" style="display:none; flex:1; padding:1.5rem; overflow-y:auto;">
+      <div class="quiz-wrap">
+        <div class="quiz-card-dark" id="quizCard">
+          <div class="quiz-category-badge" id="quizCategory"></div>
+          <div class="quiz-difficulty-badge" id="quizDifficulty"></div>
+          <div class="quiz-question" id="quizQuestion" data-i18n-placeholder="quizLoading">퀴즈를 불러오는 중...</div>
+          <div class="quiz-answers">
+            <button class="quiz-ans-btn quiz-o" id="quizTrueBtn" onclick="quizSelectAnswer(true)">
+              <span class="quiz-ans-symbol">O</span>
+              <span class="quiz-ans-label" data-i18n="quizAnswerTrue">맞습니다</span>
+            </button>
+            <button class="quiz-ans-btn quiz-x" id="quizFalseBtn" onclick="quizSelectAnswer(false)">
+              <span class="quiz-ans-symbol">X</span>
+              <span class="quiz-ans-label" data-i18n="quizAnswerFalse">틀렸습니다</span>
+            </button>
+          </div>
+          <div class="quiz-result" id="quizResult" style="display:none;">
+            <div class="quiz-result-msg" id="quizResultMsg"></div>
+            <div class="quiz-explanation" id="quizExplanation"></div>
+            <button class="quiz-next-btn" onclick="quizLoadNext()" data-i18n="quizNext">다음 문제 →</button>
+          </div>
+        </div>
+
+        <div class="quiz-stats-bar">
+          <div class="quiz-stat">
+            <span class="quiz-stat-label" data-i18n="quizCorrect">정답</span>
+            <span class="quiz-stat-val" id="quizCorrectCount">0</span>
+          </div>
+          <div class="quiz-stat">
+            <span class="quiz-stat-label" data-i18n="quizIncorrect">오답</span>
+            <span class="quiz-stat-val" id="quizIncorrectCount">0</span>
+          </div>
+          <div class="quiz-stat">
+            <span class="quiz-stat-label" data-i18n="quizAccuracy">정답률</span>
+            <span class="quiz-stat-val" id="quizAccuracy">0%</span>
+          </div>
+          <button class="quiz-reset-btn" onclick="quizResetStats()" data-i18n="quizReset">통계 초기화</button>
+        </div>
+
+        <div class="quiz-filter-bar">
+          <span class="quiz-filter-label" data-i18n="quizFilter">필터</span>
+          <select id="quizCategoryFilter" onchange="quizApplyFilter()">
+            <option value="" data-i18n="quizFilterAll">전체 카테고리</option>
+          </select>
+          <select id="quizDifficultyFilter" onchange="quizApplyFilter()">
+            <option value="" data-i18n="quizFilterAllDiff">전체 난이도</option>
+            <option value="easy" data-i18n="quizEasy">쉬움</option>
+            <option value="medium" data-i18n="quizMedium">보통</option>
+            <option value="hard" data-i18n="quizHard">어려움</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -425,6 +659,17 @@ const T = {
   ko: {
     sidebarTitle:'매크로 분석', navSection:'시장 지표',
     navTga:'TGA vs S&P 500', navFed:'기준금리 vs S&P 500',
+    navSectionQuiz:'경제 퀴즈', navQuiz:'O/X 퀴즈',
+    quizLoading:'퀴즈를 불러오는 중...',
+    quizAnswerTrue:'맞습니다', quizAnswerFalse:'틀렸습니다',
+    quizNext:'다음 문제 →',
+    quizCorrect:'정답', quizIncorrect:'오답', quizAccuracy:'정답률',
+    quizReset:'통계 초기화',
+    quizFilter:'필터', quizFilterAll:'전체 카테고리', quizFilterAllDiff:'전체 난이도',
+    quizEasy:'쉬움', quizMedium:'보통', quizHard:'어려움',
+    quizResultCorrect:'정답입니다! 🎉', quizResultIncorrect:'틀렸습니다! 😅',
+    quizExplanationPrefix:'설명: ', quizNoExplanation:'설명 없음',
+    viewTitleQuiz:'경제 O/X 퀴즈', viewSubQuiz:'경제 지식을 테스트해보세요',
     sidebarFooter:'매 영업일 자동 업데이트',
     viewTitleTga:'미국 재무부 TGA 잔고 & S&P 500',
     viewSubTga:'매 영업일 자동 업데이트 · US Treasury Fiscal Data',
@@ -449,6 +694,14 @@ const T = {
   en: {
     sidebarTitle:'Macro Analytics', navSection:'Market Indicators',
     navTga:'TGA vs S&P 500', navFed:'Fed Rate vs S&P 500',
+    navSectionQuiz:'Economy Quiz', navQuiz:'O/X Quiz',
+    quizLoading:'Loading quiz...', quizAnswerTrue:'True', quizAnswerFalse:'False',
+    quizNext:'Next Question →', quizCorrect:'Correct', quizIncorrect:'Wrong', quizAccuracy:'Accuracy',
+    quizReset:'Reset Stats', quizFilter:'Filter', quizFilterAll:'All Categories', quizFilterAllDiff:'All Levels',
+    quizEasy:'Easy', quizMedium:'Medium', quizHard:'Hard',
+    quizResultCorrect:'Correct! 🎉', quizResultIncorrect:'Wrong! 😅',
+    quizExplanationPrefix:'Explanation: ', quizNoExplanation:'No explanation',
+    viewTitleQuiz:'Economy O/X Quiz', viewSubQuiz:'Test your economics knowledge',
     sidebarFooter:'Auto-updated every business day',
     viewTitleTga:'US Treasury TGA Balance & S&P 500',
     viewSubTga:'Auto-updated every business day · US Treasury Fiscal Data',
@@ -473,6 +726,14 @@ const T = {
   zh: {
     sidebarTitle:'宏观分析', navSection:'市场指标',
     navTga:'TGA vs 标普500', navFed:'联邦基准利率 vs 标普500',
+    navSectionQuiz:'经济测验', navQuiz:'O/X 测验',
+    quizLoading:'加载中...', quizAnswerTrue:'正确', quizAnswerFalse:'错误',
+    quizNext:'下一题 →', quizCorrect:'答对', quizIncorrect:'答错', quizAccuracy:'正确率',
+    quizReset:'重置统计', quizFilter:'筛选', quizFilterAll:'全部分类', quizFilterAllDiff:'全部难度',
+    quizEasy:'简单', quizMedium:'中等', quizHard:'困难',
+    quizResultCorrect:'回答正确！🎉', quizResultIncorrect:'回答错误！😅',
+    quizExplanationPrefix:'解释：', quizNoExplanation:'暂无解释',
+    viewTitleQuiz:'经济 O/X 测验', viewSubQuiz:'测试您的经济学知识',
     sidebarFooter:'每个交易日自动更新',
     viewTitleTga:'美国财政部TGA余额 & 标普500',
     viewSubTga:'每个交易日自动更新 · 美国财政数据',
@@ -497,6 +758,14 @@ const T = {
   ja: {
     sidebarTitle:'マクロ分析', navSection:'市場指標',
     navTga:'TGA vs S&P500', navFed:'政策金利 vs S&P500',
+    navSectionQuiz:'経済クイズ', navQuiz:'O/X クイズ',
+    quizLoading:'読み込み中...', quizAnswerTrue:'正しい', quizAnswerFalse:'誤り',
+    quizNext:'次の問題 →', quizCorrect:'正解', quizIncorrect:'不正解', quizAccuracy:'正答率',
+    quizReset:'統計リセット', quizFilter:'フィルター', quizFilterAll:'全カテゴリ', quizFilterAllDiff:'全難易度',
+    quizEasy:'やさしい', quizMedium:'普通', quizHard:'難しい',
+    quizResultCorrect:'正解です！🎉', quizResultIncorrect:'不正解！😅',
+    quizExplanationPrefix:'解説：', quizNoExplanation:'解説なし',
+    viewTitleQuiz:'経済 O/X クイズ', viewSubQuiz:'経済知識をテストしよう',
     sidebarFooter:'毎営業日自動更新',
     viewTitleTga:'米財務省TGA残高 & S&P500',
     viewSubTga:'毎営業日自動更新 · 米財務省財政データ',
@@ -653,16 +922,27 @@ function drawMain(slice) {
       line:{color:vDef.xColor,width:1.5},
       fill:'tozeroy', fillcolor: vDef.xColor+'22',
       yaxis:'y2',
-      hovertemplate:`<b>${vDef.xAxisLabel()}</b>: ${vDef.hoverX(0).replace('0','%{y:.4g}')}<extra></extra>`,
+      hovertemplate:`<b>${vDef.xAxisLabel()}</b>: ${vDef.hoverTmpl}<extra></extra>`,
     },
   ];
+  // y2 축 범위: xInvert=true(기준금리)이면 데이터 기반으로 명시적 reversed range 설정
+  // autorange:'reversed' + overlaying:'y' 조합은 Plotly에서 신뢰도가 낮음
+  const xFinite = slice.x.filter(v => v != null && isFinite(v));
+  const xMin = xFinite.length ? Math.min(...xFinite) : 0;
+  const xMax = xFinite.length ? Math.max(...xFinite) : 1;
+  const xPad = (xMax - xMin) * 0.08 || 0.1;
+  const y2Range = vDef.xInvert
+    ? [xMax + xPad, xMin - xPad]   // 높은 값이 아래 → 금리↑일 때 선이 아래로
+    : undefined;
+
   const y2 = {
     gridcolor:'#1e2933', showgrid:false, linecolor:'#263238', tickcolor:GRAY,
     title:{text: vDef.xAxisLabel(), font:{color:vDef.xColor}},
     tickprefix: vDef.xTickPrefix, ticksuffix: vDef.xTickSuffix,
     tickformat: vDef.xTickFormat,
     tickfont:{color:vDef.xColor}, overlaying:'y', side:'right',
-    autorange: vDef.xInvert ? 'reversed' : true,
+    autorange: vDef.xInvert ? false : true,
+    ...(y2Range ? { range: y2Range } : {}),
   };
   const layout = {
     ...baseLayout,
@@ -688,23 +968,6 @@ function drawMain(slice) {
     },
   };
   Plotly.react('chart-main', traces, layout, cfg);
-
-  document.getElementById('chart-main').on('plotly_relayout', (e) => {
-    const from = e['xaxis.range[0]'] || (e['xaxis.range']&&e['xaxis.range'][0]);
-    const to   = e['xaxis.range[1]'] || (e['xaxis.range']&&e['xaxis.range'][1]);
-    if (from && to) {
-      rangeFrom = from.substring(0,10); rangeTo = to.substring(0,10);
-      document.getElementById('date-from').value = rangeFrom;
-      document.getElementById('date-to').value   = rangeTo;
-      syncSecondary();
-    }
-    if (e['xaxis.autorange']) {
-      rangeFrom = RAW.dates[0]; rangeTo = RAW.dates[RAW.dates.length-1];
-      document.getElementById('date-from').value = rangeFrom;
-      document.getElementById('date-to').value   = rangeTo;
-      syncSecondary();
-    }
-  });
 }
 
 // ═══════════════════════════════════════════
@@ -821,10 +1084,47 @@ function updateViewText() {
 // ═══════════════════════════════════════════
 // 동기화 (range 변경 시 corr + scatter만)
 // ═══════════════════════════════════════════
+let _syncTimer = null;
+let _isSyncing = false;
+
 function syncSecondary() {
-  const slice = getSlice();
-  drawCorr(slice);
-  drawScatter(slice);
+  if (!RAW) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(() => {
+    if (_isSyncing) return;
+    _isSyncing = true;
+    try {
+      const slice = getSlice();
+      drawCorr(slice);
+      drawScatter(slice);
+    } finally {
+      _isSyncing = false;
+    }
+  }, 60);   // 60ms 디바운스 — 연속 relayout 이벤트 흡수
+}
+
+// plotly_relayout 리스너를 딱 한 번만 등록 (init()에서 호출)
+function initChartListeners() {
+  const el = document.getElementById('chart-main');
+  el.on('plotly_relayout', (e) => {
+    if (!RAW) return;
+    const from = e['xaxis.range[0]'] ?? (e['xaxis.range']?.[0]);
+    const to   = e['xaxis.range[1]'] ?? (e['xaxis.range']?.[1]);
+    if (from && to) {
+      rangeFrom = from.substring(0, 10);
+      rangeTo   = to.substring(0, 10);
+      document.getElementById('date-from').value = rangeFrom;
+      document.getElementById('date-to').value   = rangeTo;
+      syncSecondary();
+    }
+    if (e['xaxis.autorange'] === true) {
+      rangeFrom = RAW.dates[0];
+      rangeTo   = RAW.dates[RAW.dates.length - 1];
+      document.getElementById('date-from').value = rangeFrom;
+      document.getElementById('date-to').value   = rangeTo;
+      syncSecondary();
+    }
+  });
 }
 
 function renderAll() {
@@ -839,46 +1139,82 @@ function renderAll() {
 // ═══════════════════════════════════════════
 // 뷰 전환
 // ═══════════════════════════════════════════
+const chartSections = ['range-bar', 'stats-row', 'charts-wrap'];
+
+function showChartUI(visible) {
+  document.querySelector('.range-bar').style.display  = visible ? '' : 'none';
+  document.querySelector('.stats-row').style.display  = visible ? '' : 'none';
+  document.querySelector('.charts').style.display     = visible ? '' : 'none';
+  document.getElementById('quiz-view').style.display  = visible ? 'none' : 'flex';
+}
+
 async function switchView(viewId) {
-  if (viewId === currentView && RAW) return;
+  if (viewId === currentView && (RAW || viewId === 'quiz')) return;
   currentView = viewId;
 
-  // nav active state
-  document.querySelectorAll('.nav-item').forEach(b=>{
+  document.querySelectorAll('.nav-item').forEach(b => {
     b.classList.toggle('active', b.dataset.view === viewId);
   });
+
+  // ── 퀴즈 뷰 ──
+  if (viewId === 'quiz') {
+    showChartUI(false);
+    document.getElementById('view-title').textContent = t('viewTitleQuiz');
+    document.getElementById('view-sub').textContent   = t('viewSubQuiz');
+    quizInit();
+    return;
+  }
+
+  // ── 차트 뷰로 복귀 ──
+  showChartUI(true);
 
   // 캐시에 있으면 바로 렌더
   if (cache[viewId]) {
     RAW = cache[viewId];
     rangeFrom = RAW.dates[0];
-    rangeTo   = RAW.dates[RAW.dates.length-1];
+    rangeTo   = RAW.dates[RAW.dates.length - 1];
     document.getElementById('date-from').value = rangeFrom;
     document.getElementById('date-to').value   = rangeTo;
-    document.querySelectorAll('.rng-btn').forEach(b=>b.classList.toggle('active', b.dataset.months==='0'));
+    document.querySelectorAll('.rng-btn').forEach(b => b.classList.toggle('active', b.dataset.months === '0'));
     renderAll();
     return;
   }
 
-  // 로딩
-  document.getElementById('chart-main').innerHTML    = '<div style="height:360px;display:flex;align-items:center;justify-content:center;color:var(--muted)"><div class="spinner"></div></div>';
-  document.getElementById('chart-corr').innerHTML    = '';
-  document.getElementById('chart-scatter').innerHTML = '';
+  // 차트 영역 오버레이 스피너 표시 (chart 내부 innerHTML은 건드리지 않음)
+  const vLoader = document.getElementById('view-loader');
+  const vText   = document.getElementById('view-loader-text');
+  if (vText) vText.textContent = t('loadingText');
+  vLoader.style.display = 'flex';
+
+  // 기존 Plotly 차트 정리 (innerHTML 초기화 없이)
+  ['chart-main','chart-corr','chart-scatter'].forEach(id => {
+    try { Plotly.purge(id); } catch(_) {}
+  });
 
   try {
-    const res = await fetch(VIEWS[viewId].file);
-    if (!res.ok) throw new Error(res.statusText);
+    const res = await fetch(VIEWS[viewId].file + '?_=' + Date.now());
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText} — ${VIEWS[viewId].file}`);
     RAW = await res.json();
     cache[viewId] = RAW;
     rangeFrom = RAW.dates[0];
-    rangeTo   = RAW.dates[RAW.dates.length-1];
+    rangeTo   = RAW.dates[RAW.dates.length - 1];
     document.getElementById('date-from').value = rangeFrom;
     document.getElementById('date-to').value   = rangeTo;
-    document.querySelectorAll('.rng-btn').forEach(b=>b.classList.toggle('active',b.dataset.months==='0'));
+    document.querySelectorAll('.rng-btn').forEach(b => b.classList.toggle('active', b.dataset.months === '0'));
     renderAll();
   } catch(err) {
+    // 오류 메시지를 chart-main에 표시 (Plotly 없이)
+    ['chart-corr','chart-scatter'].forEach(id => {
+      try { Plotly.purge(id); } catch(_) {}
+      document.getElementById(id).innerHTML = '';
+    });
     document.getElementById('chart-main').innerHTML =
-      `<div style="padding:2rem;color:var(--red)">데이터 로드 실패: ${err.message}</div>`;
+      `<div style="padding:2rem;color:var(--red);font-size:0.9rem">
+        ⚠️ 데이터 로드 실패: ${err.message}<br>
+        <span style="color:var(--muted);font-size:0.8rem">docs/ 폴더에 JSON 파일이 있는지 확인하세요.</span>
+      </div>`;
+  } finally {
+    vLoader.style.display = 'none';   // 성공·실패 모두 오버레이 해제
   }
 }
 
@@ -963,9 +1299,13 @@ document.querySelectorAll('.lang-btn').forEach(btn=>{
     document.documentElement.lang = LANG === 'zh' ? 'zh-CN' : LANG === 'ja' ? 'ja' : LANG;
     document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b===btn));
     applyTranslations();
-    updateViewText();
-    // 차트 재렌더 (라벨 갱신)
-    if (RAW) renderAll();
+    if (currentView === 'quiz') {
+      document.getElementById('view-title').textContent = t('viewTitleQuiz');
+      document.getElementById('view-sub').textContent   = t('viewSubQuiz');
+    } else {
+      updateViewText();
+      if (RAW) renderAll();
+    }
   });
 });
 
@@ -974,14 +1314,162 @@ document.querySelectorAll('.lang-btn').forEach(btn=>{
 // ═══════════════════════════════════════════
 async function init() {
   applyTranslations();
-  await switchView('tga');
-  document.getElementById('loading').style.display = 'none';
+  try {
+    await switchView('tga');
+    initChartListeners();   // 리스너 딱 한 번만 등록
+  } finally {
+    document.getElementById('loading').style.display = 'none';  // 성공/실패 모두 숨김
+  }
 }
 
-init().catch(err=>{
-  document.getElementById('loading').innerHTML=
-    `<span style="color:var(--red)">초기화 실패: ${err.message}</span>`;
+init().catch(err => {
+  document.getElementById('loading').innerHTML =
+    `<div style="text-align:center;color:var(--red)">⚠️ 초기화 실패<br><small style="color:var(--muted)">${err.message}</small></div>`;
 });
+
+// ═══════════════════════════════════════════
+// 경제 퀴즈 (내장 데이터 — 백엔드 불필요)
+// economy_quiz 프로젝트의 add_sample_data.py 기반
+// ═══════════════════════════════════════════
+const QUIZ_DATA = [
+  { id:1,  question:"인플레이션이란 물가가 지속적으로 상승하는 현상을 의미한다.", answer:true,  category:"기본경제개념", difficulty:"easy",   explanation:"인플레이션은 일반적으로 물가수준이 지속적으로 상승하는 현상을 말합니다. 이는 통화량 증가, 수요 증가, 공급 감소 등의 요인으로 발생할 수 있습니다." },
+  { id:2,  question:"GDP는 국내총생산을 의미하며, 한 나라의 경제 규모를 측정하는 지표이다.", answer:true,  category:"기본경제개념", difficulty:"easy",   explanation:"GDP(Gross Domestic Product)는 국내총생산으로, 특정 기간 동안 한 나라 내에서 생산된 모든 최종재화와 서비스의 시장가치를 합한 것입니다." },
+  { id:3,  question:"중앙은행의 주요 역할은 통화정책을 통해 경제를 관리하는 것이다.", answer:true,  category:"금융정책",   difficulty:"medium", explanation:"중앙은행은 통화정책을 통해 물가안정과 경제성장을 도모하고, 금융시스템의 안정성을 유지하는 역할을 담당합니다." },
+  { id:4,  question:"주식시장에서 주가가 상승하면 반드시 경제가 좋아진다는 뜻이다.", answer:false, category:"주식시장",   difficulty:"medium", explanation:"주가 상승이 반드시 경제 상황이 좋아진다는 의미는 아닙니다. 주가는 다양한 요인(심리, 유동성, 기대 등)에 의해 변동하며, 실물경제와 완전히 일치하지 않을 수 있습니다." },
+  { id:5,  question:"복리란 원금에 이자를 더한 금액에 대해 다시 이자가 붙는 것을 말한다.", answer:true,  category:"금융상식",   difficulty:"easy",   explanation:"복리는 원금과 이자를 합한 금액에 대해 다시 이자가 붙는 것을 의미합니다. 시간이 지날수록 효과가 커지는 특징이 있습니다." },
+  { id:6,  question:"경기침체는 GDP가 연속 2분기 동안 감소하는 현상이다.", answer:true,  category:"경기분석",   difficulty:"medium", explanation:"일반적으로 경기침체는 GDP가 연속 2분기(6개월) 동안 감소하는 현상으로 정의됩니다. 이는 경제 활동이 전반적으로 위축된 상태를 의미합니다." },
+  { id:7,  question:"환율이 상승하면 수출이 증가하고 수입이 감소한다.", answer:true,  category:"국제경제",   difficulty:"medium", explanation:"환율 상승(원화 약세)은 수출 상품의 가격 경쟁력을 높여 수출을 증가시키고, 수입 상품의 가격을 상대적으로 높여 수입을 감소시킵니다." },
+  { id:8,  question:"인플레이션은 항상 경제에 나쁜 영향을 미친다.", answer:false, category:"기본경제개념", difficulty:"hard",   explanation:"인플레이션은 적정 수준(보통 2-3%)에서는 경제 성장에 도움이 될 수 있습니다. 하지만 과도한 인플레이션은 경제에 악영향을 미칩니다." },
+  { id:9,  question:"중앙은행이 기준금리를 인상하면 통화량이 감소한다.", answer:true,  category:"금융정책",   difficulty:"hard",   explanation:"기준금리 인상은 시중 금리를 상승시켜 대출을 줄이고 저축을 늘려 통화량을 감소시키는 효과가 있습니다." },
+  { id:10, question:"주식은 채권보다 위험하지만 수익률이 높을 가능성이 크다.", answer:true,  category:"투자상식",   difficulty:"easy",   explanation:"주식은 채권보다 변동성이 크고 위험이 높지만, 장기적으로는 더 높은 수익률을 제공할 가능성이 큽니다." },
+  { id:11, question:"양적완화(QE)는 중앙은행이 시장에서 채권을 매입해 유동성을 공급하는 정책이다.", answer:true,  category:"금융정책",   difficulty:"hard",   explanation:"양적완화는 중앙은행이 국채나 모기지채권 등을 직접 매입해 시중에 유동성을 공급하는 비전통적 통화정책입니다. 2008년 금융위기 이후 미국 연준이 대규모로 시행했습니다." },
+  { id:12, question:"디플레이션은 물가가 지속적으로 하락하는 현상으로, 경제에 항상 유리하다.", answer:false, category:"기본경제개념", difficulty:"hard",   explanation:"디플레이션은 물가가 지속적으로 하락하는 현상입니다. 단기적으로 구매력이 높아지지만, 소비 지연, 기업 이익 감소, 실업 증가 등으로 경제에 심각한 악영향을 줄 수 있습니다." },
+  { id:13, question:"경상수지 흑자는 해외로부터의 순수입이 순지출보다 많다는 것을 의미한다.", answer:true,  category:"국제경제",   difficulty:"hard",   explanation:"경상수지 흑자는 상품·서비스 수출, 본원소득, 이전소득 등을 합산한 결과로 외국에서 받은 돈이 지급한 돈보다 많음을 의미합니다." },
+  { id:14, question:"PER(주가수익비율)이 낮을수록 주식이 고평가되어 있다는 신호다.", answer:false, category:"주식시장",   difficulty:"medium", explanation:"PER(Price-Earnings Ratio)이 낮을수록 주가 대비 이익이 많다는 뜻으로, 일반적으로 저평가되어 있을 가능성이 높습니다. 단, 업종과 성장성을 함께 고려해야 합니다." },
+  { id:15, question:"분산투자는 투자 위험을 줄이는 효과가 있다.", answer:true,  category:"투자상식",   difficulty:"easy",   explanation:"분산투자는 여러 자산에 나눠 투자함으로써 특정 자산의 손실이 전체 포트폴리오에 미치는 영향을 줄이는 전략입니다. '계란을 한 바구니에 담지 말라'는 원칙입니다." },
+];
+
+let quizStats    = { correct: 0, incorrect: 0 };
+let currentQuiz  = null;
+let filteredQuiz = [...QUIZ_DATA];
+let quizInitialized = false;
+
+function quizInit() {
+  if (!quizInitialized) {
+    quizLoadStats();
+    quizBuildCategoryFilter();
+    quizInitialized = true;
+  }
+  quizLoadRandom();
+}
+
+function quizBuildCategoryFilter() {
+  const sel = document.getElementById('quizCategoryFilter');
+  const cats = [...new Set(QUIZ_DATA.map(q => q.category))].sort();
+  cats.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    sel.appendChild(opt);
+  });
+}
+
+function quizApplyFilter() {
+  const cat  = document.getElementById('quizCategoryFilter').value;
+  const diff = document.getElementById('quizDifficultyFilter').value;
+  filteredQuiz = QUIZ_DATA.filter(q =>
+    (!cat  || q.category   === cat) &&
+    (!diff || q.difficulty === diff)
+  );
+  if (filteredQuiz.length === 0) filteredQuiz = [...QUIZ_DATA];
+  quizLoadRandom();
+}
+
+function quizLoadRandom() {
+  const pool = currentQuiz
+    ? filteredQuiz.filter(q => q.id !== currentQuiz.id)
+    : filteredQuiz;
+  const src  = pool.length > 0 ? pool : filteredQuiz;
+  currentQuiz = src[Math.floor(Math.random() * src.length)];
+  quizDisplay();
+}
+
+function quizDisplay() {
+  if (!currentQuiz) return;
+
+  document.getElementById('quizQuestion').textContent = currentQuiz.question;
+
+  const catEl  = document.getElementById('quizCategory');
+  const diffEl = document.getElementById('quizDifficulty');
+  catEl.textContent  = currentQuiz.category  ?? '';
+  diffEl.textContent = { easy: t('quizEasy'), medium: t('quizMedium'), hard: t('quizHard') }[currentQuiz.difficulty] ?? currentQuiz.difficulty;
+  diffEl.className   = `quiz-difficulty-badge ${currentQuiz.difficulty}`;
+
+  document.getElementById('quizResult').style.display   = 'none';
+  document.getElementById('quizTrueBtn').disabled        = false;
+  document.getElementById('quizFalseBtn').disabled       = false;
+  document.getElementById('quizTrueBtn').style.opacity   = '1';
+  document.getElementById('quizFalseBtn').style.opacity  = '1';
+  document.getElementById('quizTrueBtn').style.transform = 'scale(1)';
+  document.getElementById('quizFalseBtn').style.transform= 'scale(1)';
+}
+
+function quizSelectAnswer(userAnswer) {
+  if (!currentQuiz) return;
+
+  const trueBtn = document.getElementById('quizTrueBtn');
+  const falseBtn= document.getElementById('quizFalseBtn');
+  trueBtn.disabled  = true;
+  falseBtn.disabled = true;
+
+  const isCorrect = userAnswer === currentQuiz.answer;
+  if (isCorrect) quizStats.correct++; else quizStats.incorrect++;
+  quizSaveStats();
+  quizUpdateStatsUI();
+
+  const resultEl = document.getElementById('quizResult');
+  const msgEl    = document.getElementById('quizResultMsg');
+  const expEl    = document.getElementById('quizExplanation');
+
+  resultEl.style.display = 'block';
+  msgEl.textContent  = isCorrect ? t('quizResultCorrect') : t('quizResultIncorrect');
+  msgEl.className    = `quiz-result-msg ${isCorrect ? 'correct' : 'incorrect'}`;
+  expEl.textContent  = currentQuiz.explanation
+    ? t('quizExplanationPrefix') + currentQuiz.explanation
+    : t('quizNoExplanation');
+
+  const correctBtn  = currentQuiz.answer ? trueBtn : falseBtn;
+  const incorrectBtn= currentQuiz.answer ? falseBtn : trueBtn;
+  correctBtn.style.opacity   = '1';
+  correctBtn.style.transform = 'scale(1.05)';
+  incorrectBtn.style.opacity = '0.4';
+}
+
+function quizLoadNext() { quizLoadRandom(); }
+
+function quizUpdateStatsUI() {
+  document.getElementById('quizCorrectCount').textContent  = quizStats.correct;
+  document.getElementById('quizIncorrectCount').textContent= quizStats.incorrect;
+  const total = quizStats.correct + quizStats.incorrect;
+  document.getElementById('quizAccuracy').textContent =
+    total > 0 ? Math.round((quizStats.correct / total) * 100) + '%' : '0%';
+}
+
+function quizSaveStats() {
+  localStorage.setItem('macroQuizStats', JSON.stringify(quizStats));
+}
+
+function quizLoadStats() {
+  const saved = localStorage.getItem('macroQuizStats');
+  if (saved) quizStats = JSON.parse(saved);
+  quizUpdateStatsUI();
+}
+
+function quizResetStats() {
+  quizStats = { correct: 0, incorrect: 0 };
+  quizSaveStats();
+  quizUpdateStatsUI();
+}
 </script>
 </body>
 </html>
