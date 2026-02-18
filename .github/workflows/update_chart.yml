@@ -33,13 +33,11 @@ jobs:
       - name: Set Matplotlib backend (headless)
         run: echo "MPLBACKEND=Agg" >> $GITHUB_ENV
 
-      - name: Generate chart
+      - name: Generate TGA chart + JSON
         run: python tga_sp500_chart.py
 
-      - name: Update index.html with today's date
-        run: |
-          TODAY=$(date -u +"%Y년 %m월 %d일")
-          sed -i "s|<span id=\"updated\">.*</span>|<span id=\"updated\">${TODAY}</span>|" docs/index.html
+      - name: Generate Fed Rate chart + JSON
+        run: python fed_rate_sp500_chart.py
 
       - name: Commit and push updated chart
         run: |

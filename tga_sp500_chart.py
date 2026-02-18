@@ -3,13 +3,16 @@
 미국 재무부 TGA(Treasury General Account) 잔고와 S&P 500 상관관계 시각화
 - TGA 데이터: US Treasury Fiscal Data API
 - S&P 500 데이터: yfinance (^GSPC)
+- 출력: docs/data.json (인터랙티브 페이지용) + docs/tga_sp500_correlation.png (정적 이미지)
 """
 
+import json
 import os
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+import numpy as np
 import pandas as pd
 import requests
 import yfinance as yf
@@ -201,8 +204,6 @@ def main():
         )
 
     # 추세선
-    import numpy as np
-
     z = np.polyfit(merged["tga_bil"], merged["sp500"], 1)
     p = np.poly1d(z)
     xs = np.linspace(merged["tga_bil"].min(), merged["tga_bil"].max(), 200)
@@ -248,7 +249,32 @@ def main():
     out = os.path.join(out_dir, "tga_sp500_correlation.png")
     plt.savefig(out, dpi=150, bbox_inches="tight", facecolor="#0d1117")
     plt.close()
-    print(f"저장 완료: {out}")
+    print(f"PNG 저장 완료: {out}")
+
+    export_json(merged, corr, pval, out_dir)
+
+
+def export_json(merged: pd.DataFrame, corr: float, pval: float, out_dir: str) -> None:
+    """인터랙티브 페이지용 JSON 데이터 파일을 docs/ 에 저장합니다."""
+    dates = merged.index.strftime("%Y-%m-%d").tolist()
+
+    def to_list(series: pd.Series) -> list:
+        return [None if np.isnan(v) else round(float(v), 4) for v in series]
+
+    payload = {
+        "updated": pd.Timestamp.today().strftime("%Y-%m-%d"),
+        "corr": round(float(corr), 4),
+        "pval": round(float(pval), 6),
+        "dates": dates,
+        "tga": to_list(merged["tga_bil"]),
+        "sp500": to_list(merged["sp500"]),
+        "rolling_corr": to_list(merged["rolling_corr"]),
+    }
+
+    out = os.path.join(out_dir, "data.json")
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(payload, f, separators=(",", ":"))
+    print(f"JSON 저장 완료: {out}")
 
 
 if __name__ == "__main__":
