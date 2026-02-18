@@ -501,6 +501,31 @@
   <span data-i18n="navCpi">CPI 인플레이션</span>
 </button>
 
+    <button class="nav-item" data-view="copper">
+  <span class="nav-icon">🔧</span>
+  <span data-i18n="navCopper">구리 (Dr. Copper)</span>
+</button>
+
+    <button class="nav-item" data-view="gold_dxy">
+  <span class="nav-icon">🏅</span>
+  <span data-i18n="navGoldDxy">금 vs 달러인덱스</span>
+</button>
+
+    <button class="nav-item" data-view="btc_qqq">
+  <span class="nav-icon">₿</span>
+  <span data-i18n="navBtcQqq">비트코인 vs 나스닥</span>
+</button>
+
+    <button class="nav-item" data-view="wti_cpi">
+  <span class="nav-icon">🛢️</span>
+  <span data-i18n="navWtiCpi">WTI 원유 vs CPI</span>
+</button>
+
+    <button class="nav-item" data-view="unrate_fed">
+  <span class="nav-icon">📊</span>
+  <span data-i18n="navUnrateFed">실업률 vs 기준금리</span>
+</button>
+
     <!-- ##CHART_NAV_ITEMS## add_chart.py가 여기 위에 nav-item을 삽입 -->
 
     <div class="nav-section" data-i18n="navSectionQuiz">경제 퀴즈</div>
@@ -564,9 +589,9 @@
         <div class="sub" id="stat-x-sub">—</div>
       </div>
       <div class="stat-card">
-        <div class="label" data-i18n="statSp500">S&amp;P 500</div>
-        <div class="value" id="stat-sp500">—</div>
-        <div class="sub" data-i18n="statSp500Sub">최신 종가</div>
+        <div class="label" id="stat-y-label">S&amp;P 500</div>
+        <div class="value" id="stat-y">—</div>
+        <div class="sub" id="stat-y-sub">최신 종가</div>
       </div>
       <div class="stat-card">
         <div class="label" data-i18n="statCorr">전체 Pearson r</div>
@@ -753,6 +778,31 @@ const T = {
     chartMainCpi:'S&P 500 & CPI 인플레이션 — 시계열',
     chartScatterCpi:'CPI 인플레이션 vs S&P 500 — 산점도 (선택 구간)',
     cpiLabel:'CPI 인플레이션 (%)',
+    navCopper:'구리 (Dr. Copper)', viewTitleCopper:'구리 (Dr. Copper) & S&P 500', viewSubCopper:'자동 업데이트',
+    statCopper:'구리 (Dr. Copper)', statCopperSub:'',
+    chartMainCopper:'S&P 500 & 구리 (Dr. Copper) — 시계열',
+    chartScatterCopper:'구리 (Dr. Copper) vs S&P 500 — 산점도 (선택 구간)',
+    copperLabel:'구리 (Dr. Copper)',
+    navGoldDxy:'금 vs 달러인덱스', viewTitleGoldDxy:'금(Gold) vs 달러인덱스(DXY)', viewSubGoldDxy:'자동 업데이트',
+    statGoldDxy:'금 (Gold)', statGoldDxySub:'USD/oz',
+    chartMainGoldDxy:'금(Gold) & 달러인덱스(DXY) — 시계열',
+    chartScatterGoldDxy:'달러인덱스(DXY) vs 금(Gold) — 산점도 (선택 구간)',
+    goldLabel:'금 (Gold, USD/oz)', dxyGoldLabel:'달러인덱스 (DXY)',
+    navBtcQqq:'비트코인 vs 나스닥', viewTitleBtcQqq:'비트코인(BTC) vs 나스닥(QQQ)', viewSubBtcQqq:'자동 업데이트',
+    statBtcQqq:'비트코인 (BTC)', statBtcQqqSub:'USD',
+    chartMainBtcQqq:'비트코인(BTC) & 나스닥(QQQ) — 시계열',
+    chartScatterBtcQqq:'나스닥(QQQ) vs 비트코인(BTC) — 산점도 (선택 구간)',
+    btcLabel:'비트코인 (USD)', qqqLabel:'NASDAQ (QQQ, USD)',
+    navWtiCpi:'WTI 원유 vs CPI', viewTitleWtiCpi:'WTI 원유 vs CPI 인플레이션', viewSubWtiCpi:'자동 업데이트',
+    statWtiCpi:'WTI 원유', statWtiCpiSub:'USD/bbl',
+    chartMainWtiCpi:'WTI 원유 & CPI 인플레이션 — 시계열',
+    chartScatterWtiCpi:'CPI 인플레이션 vs WTI 원유 — 산점도 (선택 구간)',
+    wtiLabel:'WTI 원유 (USD/bbl)', cpiWtiLabel:'CPI 인플레이션율 (%)',
+    navUnrateFed:'실업률 vs 기준금리', viewTitleUnrateFed:'미국 실업률 vs 기준금리', viewSubUnrateFed:'자동 업데이트',
+    statUnrateFed:'실업률 (UNRATE)', statUnrateFedSub:'%',
+    chartMainUnrateFed:'미국 실업률 & 기준금리 — 시계열',
+    chartScatterUnrateFed:'기준금리 vs 실업률 — 산점도 (선택 구간)',
+    unrateLabel:'실업률 (%)', fedUnrateLabel:'기준금리 (%)',
     // ##CHART_TRANS_KO##
   },
   en: {
@@ -818,6 +868,31 @@ const T = {
     chartMainCpi:'S&P 500 & CPI Inflation — Time Series',
     chartScatterCpi:'CPI Inflation vs S&P 500 — Scatter (selected range)',
     cpiLabel:'CPI Inflation (%)',
+    navCopper:'Copper (Dr. Copper)', viewTitleCopper:'Copper (Dr. Copper) & S&P 500', viewSubCopper:'Auto-updated',
+    statCopper:'Copper (Dr. Copper)', statCopperSub:'',
+    chartMainCopper:'S&P 500 & Copper (Dr. Copper) — Time Series',
+    chartScatterCopper:'Copper (Dr. Copper) vs S&P 500 — Scatter (selected range)',
+    copperLabel:'Copper (Dr. Copper)',
+    navGoldDxy:'Gold vs Dollar Index', viewTitleGoldDxy:'Gold vs Dollar Index (DXY)', viewSubGoldDxy:'Auto-updated',
+    statGoldDxy:'Gold', statGoldDxySub:'USD/oz',
+    chartMainGoldDxy:'Gold & Dollar Index (DXY) — Time Series',
+    chartScatterGoldDxy:'Dollar Index (DXY) vs Gold — Scatter (selected range)',
+    goldLabel:'Gold (USD/oz)', dxyGoldLabel:'Dollar Index (DXY)',
+    navBtcQqq:'Bitcoin vs NASDAQ', viewTitleBtcQqq:'Bitcoin (BTC) vs NASDAQ (QQQ)', viewSubBtcQqq:'Auto-updated',
+    statBtcQqq:'Bitcoin (BTC)', statBtcQqqSub:'USD',
+    chartMainBtcQqq:'Bitcoin (BTC) & NASDAQ (QQQ) — Time Series',
+    chartScatterBtcQqq:'NASDAQ (QQQ) vs Bitcoin (BTC) — Scatter (selected range)',
+    btcLabel:'Bitcoin (USD)', qqqLabel:'NASDAQ (QQQ, USD)',
+    navWtiCpi:'WTI Crude vs CPI', viewTitleWtiCpi:'WTI Crude Oil vs CPI Inflation', viewSubWtiCpi:'Auto-updated',
+    statWtiCpi:'WTI Crude', statWtiCpiSub:'USD/bbl',
+    chartMainWtiCpi:'WTI Crude Oil & CPI Inflation — Time Series',
+    chartScatterWtiCpi:'CPI Inflation vs WTI Crude — Scatter (selected range)',
+    wtiLabel:'WTI Crude (USD/bbl)', cpiWtiLabel:'CPI Inflation (%)',
+    navUnrateFed:'Unemployment vs Fed Rate', viewTitleUnrateFed:'US Unemployment vs Fed Rate', viewSubUnrateFed:'Auto-updated',
+    statUnrateFed:'Unemployment Rate', statUnrateFedSub:'%',
+    chartMainUnrateFed:'US Unemployment Rate & Fed Rate — Time Series',
+    chartScatterUnrateFed:'Fed Rate vs Unemployment — Scatter (selected range)',
+    unrateLabel:'Unemployment Rate (%)', fedUnrateLabel:'Fed Funds Rate (%)',
     // ##CHART_TRANS_EN##
   },
   zh: {
@@ -883,6 +958,31 @@ const T = {
     chartMainCpi:'标普500 & CPI通货膨胀率 — 时间序列',
     chartScatterCpi:'CPI通货膨胀率 vs 标普500 — 散点图 (选定区间)',
     cpiLabel:'CPI通货膨胀率 (%)',
+    navCopper:'铜(铜博士)', viewTitleCopper:'铜(铜博士) & 标普500', viewSubCopper:'自动更新',
+    statCopper:'铜(铜博士)', statCopperSub:'',
+    chartMainCopper:'标普500 & 铜(铜博士) — 时间序列',
+    chartScatterCopper:'铜(铜博士) vs 标普500 — 散点图 (选定区间)',
+    copperLabel:'铜(铜博士)',
+    navGoldDxy:'黄金vs美元指数', viewTitleGoldDxy:'黄金 vs 美元指数(DXY)', viewSubGoldDxy:'自动更新',
+    statGoldDxy:'黄金', statGoldDxySub:'USD/oz',
+    chartMainGoldDxy:'黄金 & 美元指数(DXY) — 时间序列',
+    chartScatterGoldDxy:'美元指数(DXY) vs 黄金 — 散点图 (选定区间)',
+    goldLabel:'黄金 (USD/oz)', dxyGoldLabel:'美元指数(DXY)',
+    navBtcQqq:'比特币vs纳斯达克', viewTitleBtcQqq:'比特币(BTC) vs 纳斯达克(QQQ)', viewSubBtcQqq:'自动更新',
+    statBtcQqq:'比特币(BTC)', statBtcQqqSub:'USD',
+    chartMainBtcQqq:'比特币(BTC) & 纳斯达克(QQQ) — 时间序列',
+    chartScatterBtcQqq:'纳斯达克(QQQ) vs 比特币(BTC) — 散点图 (选定区间)',
+    btcLabel:'比特币 (USD)', qqqLabel:'纳斯达克 (QQQ, USD)',
+    navWtiCpi:'WTI原油vs CPI', viewTitleWtiCpi:'WTI原油 vs CPI通货膨胀率', viewSubWtiCpi:'自动更新',
+    statWtiCpi:'WTI原油', statWtiCpiSub:'USD/bbl',
+    chartMainWtiCpi:'WTI原油 & CPI通货膨胀率 — 时间序列',
+    chartScatterWtiCpi:'CPI通货膨胀率 vs WTI原油 — 散点图 (选定区间)',
+    wtiLabel:'WTI原油 (USD/bbl)', cpiWtiLabel:'CPI通货膨胀率 (%)',
+    navUnrateFed:'失业率vs基准利率', viewTitleUnrateFed:'美国失业率 vs 基准利率', viewSubUnrateFed:'自动更新',
+    statUnrateFed:'失业率 (UNRATE)', statUnrateFedSub:'%',
+    chartMainUnrateFed:'美国失业率 & 基准利率 — 时间序列',
+    chartScatterUnrateFed:'基准利率 vs 失业率 — 散点图 (选定区间)',
+    unrateLabel:'失业率 (%)', fedUnrateLabel:'基准利率 (%)',
     // ##CHART_TRANS_ZH##
   },
   ja: {
@@ -948,6 +1048,31 @@ const T = {
     chartMainCpi:'S&P500 & CPIインフレ率 — 時系列',
     chartScatterCpi:'CPIインフレ率 vs S&P500 — 散布図 (選択期間)',
     cpiLabel:'CPIインフレ率 (%)',
+    navCopper:'銅(ドクターコッパー)', viewTitleCopper:'銅(ドクターコッパー) & S&P500', viewSubCopper:'自動更新',
+    statCopper:'銅(ドクターコッパー)', statCopperSub:'',
+    chartMainCopper:'S&P500 & 銅(ドクターコッパー) — 時系列',
+    chartScatterCopper:'銅(ドクターコッパー) vs S&P500 — 散布図 (選択期間)',
+    copperLabel:'銅(ドクターコッパー)',
+    navGoldDxy:'金vsドル指数', viewTitleGoldDxy:'金(Gold) vs ドル指数(DXY)', viewSubGoldDxy:'自動更新',
+    statGoldDxy:'金 (Gold)', statGoldDxySub:'USD/oz',
+    chartMainGoldDxy:'金(Gold) & ドル指数(DXY) — 時系列',
+    chartScatterGoldDxy:'ドル指数(DXY) vs 金(Gold) — 散布図 (選択期間)',
+    goldLabel:'金 (USD/oz)', dxyGoldLabel:'ドル指数(DXY)',
+    navBtcQqq:'ビットコインvsナスダック', viewTitleBtcQqq:'ビットコイン(BTC) vs ナスダック(QQQ)', viewSubBtcQqq:'自動更新',
+    statBtcQqq:'ビットコイン(BTC)', statBtcQqqSub:'USD',
+    chartMainBtcQqq:'ビットコイン(BTC) & ナスダック(QQQ) — 時系列',
+    chartScatterBtcQqq:'ナスダック(QQQ) vs ビットコイン(BTC) — 散布図 (選択期間)',
+    btcLabel:'ビットコイン (USD)', qqqLabel:'ナスダック (QQQ, USD)',
+    navWtiCpi:'WTI原油vs CPI', viewTitleWtiCpi:'WTI原油 vs CPIインフレ率', viewSubWtiCpi:'自動更新',
+    statWtiCpi:'WTI原油', statWtiCpiSub:'USD/bbl',
+    chartMainWtiCpi:'WTI原油 & CPIインフレ率 — 時系列',
+    chartScatterWtiCpi:'CPIインフレ率 vs WTI原油 — 散布図 (選択期間)',
+    wtiLabel:'WTI原油 (USD/bbl)', cpiWtiLabel:'CPIインフレ率 (%)',
+    navUnrateFed:'失業率vs政策金利', viewTitleUnrateFed:'米国失業率 vs 政策金利', viewSubUnrateFed:'自動更新',
+    statUnrateFed:'失業率 (UNRATE)', statUnrateFedSub:'%',
+    chartMainUnrateFed:'米国失業率 & 政策金利 — 時系列',
+    chartScatterUnrateFed:'政策金利 vs 失業率 — 散布図 (選択期間)',
+    unrateLabel:'失業率 (%)', fedUnrateLabel:'政策金利 (%)',
     // ##CHART_TRANS_JA##
   },
 };
@@ -1027,6 +1152,109 @@ const VIEWS = {
     statVal: (d) => `${d?.toFixed(2)}%`,
   },
   // ##CHART_VIEWS##
+  gold_dxy: {
+    file: 'gold_dxy_data.json',
+    xKey: 'dxy',          // secondary axis (right, inverted)
+    yKey: 'gold',         // primary axis (left)
+    xColor: '#2196F3',
+    yColor: '#FFD700',
+    yScale: -1,
+    fill: 'none',
+    hoverTmpl: '%{customdata:.2f}',
+    yHoverFmt: '%{y:,.0f}',
+    yTickFmt: ',.0f',
+    scatterXFormat: v => `${v?.toFixed(2)}`,
+    titleMain:    () => t('chartMainGoldDxy'),
+    titleScatter: () => t('chartScatterGoldDxy'),
+    xAxisLabel:   () => t('dxyGoldLabel'),
+    yLabel:       () => t('goldLabel'),
+    statLabel:    () => t('statGoldDxy'),
+    statSub:      () => t('statGoldDxySub'),
+    yStatSub:     () => t('statGoldDxySub'),
+    yStatVal:     d  => d != null ? `$${d.toLocaleString('ko-KR',{maximumFractionDigits:0})}` : '—',
+    statVal:      d  => `${d?.toFixed(2)}`,
+  },
+  btc_qqq: {
+    file: 'btc_qqq_data.json',
+    xKey: 'qqq',          // secondary axis (right)
+    yKey: 'btc',          // primary axis (left)
+    xColor: '#6C63FF',
+    yColor: '#F7931A',
+    yScale: 1,
+    fill: 'none',
+    hoverTmpl: '%{y:.2f}',
+    yHoverFmt: '%{y:,.0f}',
+    yTickFmt: ',.0f',
+    scatterXFormat: v => `$${v?.toFixed(2)}`,
+    titleMain:    () => t('chartMainBtcQqq'),
+    titleScatter: () => t('chartScatterBtcQqq'),
+    xAxisLabel:   () => t('qqqLabel'),
+    yLabel:       () => t('btcLabel'),
+    statLabel:    () => t('statBtcQqq'),
+    statSub:      () => t('statBtcQqqSub'),
+    yStatSub:     () => t('statBtcQqqSub'),
+    yStatVal:     d  => d != null ? `$${d.toLocaleString('ko-KR',{maximumFractionDigits:0})}` : '—',
+    statVal:      d  => d != null ? `$${d.toFixed(2)}` : '—',
+  },
+  wti_cpi: {
+    file: 'wti_cpi_data.json',
+    xKey: 'cpi',          // secondary axis (right)
+    yKey: 'wti',          // primary axis (left)
+    xColor: '#FF5722',
+    yColor: '#8B4513',
+    yScale: 1,
+    fill: 'none',
+    hoverTmpl: '%{y:.2f}%',
+    yHoverFmt: '%{y:.2f}',
+    yTickFmt: '.2f',
+    scatterXFormat: v => `${v?.toFixed(2)}%`,
+    titleMain:    () => t('chartMainWtiCpi'),
+    titleScatter: () => t('chartScatterWtiCpi'),
+    xAxisLabel:   () => t('cpiWtiLabel'),
+    yLabel:       () => t('wtiLabel'),
+    statLabel:    () => t('statWtiCpi'),
+    statSub:      () => t('statWtiCpiSub'),
+    yStatSub:     () => t('statWtiCpiSub'),
+    yStatVal:     d  => d != null ? `$${d.toFixed(2)}` : '—',
+    statVal:      d  => `${d?.toFixed(2)}%`,
+  },
+  unrate_fed: {
+    file: 'unrate_fed_data.json',
+    xKey: 'fed_rate',     // secondary axis (right, inverted)
+    yKey: 'unrate',       // primary axis (left)
+    xColor: '#FF9800',
+    yColor: '#00BCD4',
+    yScale: -1,
+    fill: 'none',
+    hoverTmpl: '%{customdata:.2f}%',
+    yHoverFmt: '%{y:.2f}%',
+    yTickFmt: '.2f',
+    scatterXFormat: v => `${v?.toFixed(2)}%`,
+    titleMain:    () => t('chartMainUnrateFed'),
+    titleScatter: () => t('chartScatterUnrateFed'),
+    xAxisLabel:   () => t('fedUnrateLabel'),
+    yLabel:       () => t('unrateLabel'),
+    statLabel:    () => t('statUnrateFed'),
+    statSub:      () => t('statUnrateFedSub'),
+    yStatSub:     () => t('statUnrateFedSub'),
+    yStatVal:     d  => d != null ? `${d.toFixed(1)}%` : '—',
+    statVal:      d  => `${d?.toFixed(2)}%`,
+  },
+  copper: {
+      file: 'copper_data.json',
+      xKey: 'copper',
+      xColor: '#B87333',
+      yScale: 1,
+      fill: 'tozeroy',
+      hoverTmpl: '%{y:.4g}',
+      scatterXFormat: v => `${v?.toFixed(2)}`,
+      titleMain:    () => t('chartMainCopper'),
+      titleScatter: () => t('chartScatterCopper'),
+      xAxisLabel:   () => t('copperLabel'),
+      statLabel:    () => t('statCopper'),
+      statSub:      () => t('statCopperSub'),
+      statVal:      (d) => `${d?.toFixed(2)}`,
+  },
   cpi: {
       file: 'cpi_data.json',
       xKey: 'cpi',
@@ -1151,10 +1379,11 @@ function sliceByRange() {
 function getSlice() {
   const [i0,i1] = sliceByRange();
   const vDef    = VIEWS[currentView];
+  const yKey    = vDef.yKey ?? 'sp500';
   return {
     dates:        RAW.dates.slice(i0,i1+1),
     x:            RAW[vDef.xKey].slice(i0,i1+1),
-    sp500:        RAW.sp500.slice(i0,i1+1),
+    y:            RAW[yKey].slice(i0,i1+1),
     rolling_corr: RAW.rolling_corr.slice(i0,i1+1),
   };
 }
@@ -1183,12 +1412,15 @@ function drawMain(slice) {
     ...(isInverted ? { customdata: slice.x } : {}),
   };
 
+  const yLabel = vDef.yLabel ? vDef.yLabel() : t('sp500Label');
+  const yColor = vDef.yColor ?? GREEN;
+  const yHoverFmt = vDef.yHoverFmt ?? '%{y:,.0f}';
   const traces = [
     {
-      x: slice.dates, y: slice.sp500,
-      name: t('sp500Label'), type:'scatter', mode:'lines',
-      line:{color:GREEN,width:1.8}, yaxis:'y',
-      hovertemplate:`<b>${t('sp500Label')}</b>: %{y:,.0f}<extra></extra>`,
+      x: slice.dates, y: slice.y,
+      name: yLabel, type:'scatter', mode:'lines',
+      line:{color:yColor,width:1.8}, yaxis:'y',
+      hovertemplate:`<b>${yLabel}</b>: ${yHoverFmt}<extra></extra>`,
     },
     y2Trace,
   ];
@@ -1220,8 +1452,8 @@ function drawMain(slice) {
     ...baseLayout,
     height: 360,
     margin:{l:70,r:80,t:14,b:38},
-    yaxis:{...baseLayout.yaxis, title:{text:t('sp500Label'),font:{color:GREEN}},
-      tickformat:',.0f', tickfont:{color:GREEN}},
+    yaxis:{...baseLayout.yaxis, title:{text:yLabel,font:{color:yColor}},
+      tickformat: vDef.yTickFmt ?? ',.0f', tickfont:{color:yColor}},
     yaxis2: y2,
     xaxis:{
       ...baseLayout.xaxis,
@@ -1285,7 +1517,7 @@ function drawScatter(slice) {
   slice.dates.forEach((d,i)=>{
     const y=d.substring(0,4);
     if(!byYear[y]) byYear[y]={x:[],y:[]};
-    if(slice.x[i]!=null && slice.sp500[i]!=null){byYear[y].x.push(slice.x[i]);byYear[y].y.push(slice.sp500[i]);}
+    if(slice.x[i]!=null && slice.y[i]!=null){byYear[y].x.push(slice.x[i]);byYear[y].y.push(slice.y[i]);}
   });
 
   const allX=[], allY=[];
@@ -1304,7 +1536,7 @@ function drawScatter(slice) {
   const traces = Object.entries(byYear).map(([y,g])=>({
     x:g.x, y:g.y, name:y, type:'scatter', mode:'markers',
     marker:{color:yc[y],size:5,opacity:0.65},
-    hovertemplate:`<b>${y}</b><br>${vDef.xAxisLabel()}: ${vDef.scatterXFormat(0).replace('0','%{x:.3g}')}<br>S&P: %{y:,.0f}<extra></extra>`,
+    hovertemplate:`<b>${y}</b><br>${vDef.xAxisLabel()}: ${vDef.scatterXFormat(0).replace('0','%{x:.3g}')}<br>${vDef.yLabel?vDef.yLabel():t('sp500Label')}: %{y:,.4g}<extra></extra>`,
   }));
   traces.push({
     x:trendX, y:trendY,
@@ -1318,7 +1550,7 @@ function drawScatter(slice) {
     xaxis:{...baseLayout.xaxis, rangeslider:{visible:false},
       title:{text:vDef.xAxisLabel(),font:{color:GRAY}},
       tickprefix:vDef.xTickPrefix, ticksuffix:vDef.xTickSuffix, tickformat:vDef.xTickFormat},
-    yaxis:{...baseLayout.yaxis, title:{text:t('sp500Label'),font:{color:GRAY}}, tickformat:',.0f'},
+    yaxis:{...baseLayout.yaxis, title:{text:vDef.yLabel?vDef.yLabel():t('sp500Label'),font:{color:GRAY}}, tickformat: vDef.yTickFmt ?? ',.0f'},
     legend:{...baseLayout.legend, orientation:'h', y:-0.18, x:0},
   };
   Plotly.react('chart-scatter', traces, layout, cfg);
@@ -1331,10 +1563,17 @@ function updateStats() {
   const vDef = VIEWS[currentView];
   const last = RAW.dates.length-1;
   const xLast = RAW[vDef.xKey][last];
+  const yKey  = vDef.yKey ?? 'sp500';
+  const yLast = RAW[yKey]?.[last];
   document.getElementById('stat-x').textContent      = vDef.statVal(xLast);
   document.getElementById('stat-x-label').textContent= vDef.statLabel();
   document.getElementById('stat-x-sub').textContent  = vDef.statSub();
-  document.getElementById('stat-sp500').textContent  = RAW.sp500[last]?.toLocaleString('ko-KR',{maximumFractionDigits:0}) ?? '—';
+  // Y 축 stat 카드: yKey가 있으면 커스텀 표시, 없으면 S&P 500
+  document.getElementById('stat-y-label').textContent= vDef.yLabel ? vDef.yLabel() : t('sp500Label');
+  document.getElementById('stat-y-sub').textContent  = vDef.yStatSub ? vDef.yStatSub() : t('statSp500Sub');
+  document.getElementById('stat-y').textContent      = vDef.yStatVal
+    ? vDef.yStatVal(yLast)
+    : (yLast?.toLocaleString('ko-KR',{maximumFractionDigits:0}) ?? '—');
   document.getElementById('stat-corr').textContent   = RAW.corr;
   document.getElementById('stat-pval').textContent   = `p ${RAW.pval<0.001?'< 0.001':'= '+RAW.pval}`;
   document.getElementById('stat-updated').textContent= RAW.updated;

@@ -58,6 +58,9 @@ jobs:
       - name: Generate Cpi chart + JSON
         run: python functions/cpi_sp500_chart.py
 
+      - name: Generate Copper chart + JSON
+        run: python functions/copper_sp500_chart.py
+
             # ##CHART_STEPS## add_chart.py가 여기 위에 step을 삽입
 
       - name: Commit and push updated chart
