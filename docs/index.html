@@ -1536,7 +1536,7 @@ function drawScatter(slice) {
   const traces = Object.entries(byYear).map(([y,g])=>({
     x:g.x, y:g.y, name:y, type:'scatter', mode:'markers',
     marker:{color:yc[y],size:5,opacity:0.65},
-    hovertemplate:`<b>${y}</b><br>${vDef.xAxisLabel()}: ${vDef.scatterXFormat(0).replace('0','%{x:.3g}')}<br>${vDef.yLabel?vDef.yLabel():t('sp500Label')}: %{y:,.4g}<extra></extra>`,
+    hovertemplate:`<b>${y}</b><br>${vDef.xAxisLabel()}: %{x:.4g}<br>${vDef.yLabel?vDef.yLabel():t('sp500Label')}: %{y:,.4g}<extra></extra>`,
   }));
   traces.push({
     x:trendX, y:trendY,
@@ -1582,12 +1582,15 @@ function updateStats() {
 // ═══════════════════════════════════════════
 // 헤더 & 차트 타이틀 갱신
 // ═══════════════════════════════════════════
+function viewCamelKey(prefix) {
+  // snake_case → CamelCase: 'unrate_fed' → 'viewTitleUnrateFed'
+  const cc = currentView.replace(/_([a-zA-Z0-9])/g, (_, c) => c.toUpperCase());
+  return prefix + cc.charAt(0).toUpperCase() + cc.slice(1);
+}
 function updateViewText() {
   const vDef = VIEWS[currentView];
-  const titleKey = { tga:'viewTitleTga', fed:'viewTitleFed', us_debt:'viewTitleUsDebt' };
-  const subKey   = { tga:'viewSubTga',   fed:'viewSubFed',   us_debt:'viewSubUsDebt'   };
-  document.getElementById('view-title').textContent = t(titleKey[currentView] ?? 'viewTitleTga');
-  document.getElementById('view-sub').textContent   = t(subKey[currentView]   ?? 'viewSubTga');
+  document.getElementById('view-title').textContent = t(viewCamelKey('viewTitle'));
+  document.getElementById('view-sub').textContent   = t(viewCamelKey('viewSub'));
   document.getElementById('title-main').textContent    = vDef.titleMain();
   document.getElementById('title-scatter').textContent = vDef.titleScatter();
   document.getElementById('title-corr').textContent    = t('chartCorr');
