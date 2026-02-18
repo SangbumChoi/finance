@@ -42,8 +42,9 @@ pip install -r requirements.txt
 ### 3. 데이터 & 차트 생성
 
 ```bash
-MPLBACKEND=Agg python3 tga_sp500_chart.py
-# docs/data.json 과 docs/tga_sp500_correlation.png 가 생성됩니다.
+MPLBACKEND=Agg python3 functions/tga_sp500_chart.py
+MPLBACKEND=Agg python3 functions/fed_rate_sp500_chart.py
+# docs/data.json, docs/fed_rate_data.json 등이 생성됩니다.
 ```
 
 ### 4. 로컬 웹 서버로 확인
@@ -108,14 +109,17 @@ pre-commit run --all-files
 finance/
 ├── .github/
 │   └── workflows/
-│       └── update_chart.yml   # GitHub Actions 스케줄
-├── docs/                      # GitHub Pages 서빙 폴더
-│   ├── index.html             # Plotly.js 인터랙티브 페이지
-│   ├── data.json              # 차트 데이터 (자동 생성)
-│   └── tga_sp500_correlation.png  # 정적 이미지 (자동 생성)
-├── tga_sp500_chart.py         # 데이터 수집 & 시각화 스크립트
+│       └── update_chart.yml          # GitHub Actions 스케줄
+├── docs/                             # GitHub Pages 서빙 폴더
+│   ├── index.html                    # Plotly.js 인터랙티브 페이지
+│   ├── data.json                     # TGA 차트 데이터 (자동 생성)
+│   ├── fed_rate_data.json            # 기준금리 차트 데이터 (자동 생성)
+│   └── *.png                         # 정적 이미지 (자동 생성)
+├── functions/                        # 차트 생성 Python 스크립트
+│   ├── tga_sp500_chart.py
+│   └── fed_rate_sp500_chart.py
 ├── requirements.txt
-├── ruff.toml                  # Ruff lint/format 설정
+├── ruff.toml                         # Ruff lint/format 설정
 ├── .pre-commit-config.yaml
 └── README.md
 ```

@@ -27,17 +27,17 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          ruff check .
-          ruff format --check .
+          ruff check functions/
+          ruff format --check functions/
 
       - name: Set Matplotlib backend (headless)
         run: echo "MPLBACKEND=Agg" >> $GITHUB_ENV
 
       - name: Generate TGA chart + JSON
-        run: python tga_sp500_chart.py
+        run: python functions/tga_sp500_chart.py
 
       - name: Generate Fed Rate chart + JSON
-        run: python fed_rate_sp500_chart.py
+        run: python functions/fed_rate_sp500_chart.py
 
       - name: Commit and push updated chart
         run: |

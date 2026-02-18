@@ -76,7 +76,7 @@ def main():
 
     print(f"  병합 결과: {len(merged)}개 월, Pearson r = {corr:.3f}")
 
-    out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+    out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "docs")
     os.makedirs(out_dir, exist_ok=True)
 
     draw_chart(merged, corr, pval, out_dir)

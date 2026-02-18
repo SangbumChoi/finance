@@ -244,7 +244,7 @@ def main():
         fontweight="bold",
     )
 
-    out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+    out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "docs")
     os.makedirs(out_dir, exist_ok=True)
     out = os.path.join(out_dir, "tga_sp500_correlation.png")
     plt.savefig(out, dpi=150, bbox_inches="tight", facecolor="#0d1117")
