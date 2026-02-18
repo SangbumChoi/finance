@@ -43,7 +43,22 @@ jobs:
       - name: Generate US Total Debt chart + JSON
         run: python functions/us_debt_sp500_chart.py
 
-      # ##CHART_STEPS## add_chart.py가 여기 위에 step을 삽입
+- name: Generate Vix chart + JSON
+        run: python functions/vix_sp500_chart.py
+
+      - name: Generate Yield10 chart + JSON
+        run: python functions/yield10_sp500_chart.py
+
+      - name: Generate Dxy chart + JSON
+        run: python functions/dxy_sp500_chart.py
+
+      - name: Generate M2 chart + JSON
+        run: python functions/m2_sp500_chart.py
+
+      - name: Generate Cpi chart + JSON
+        run: python functions/cpi_sp500_chart.py
+
+            # ##CHART_STEPS## add_chart.py가 여기 위에 step을 삽입
 
       - name: Commit and push updated chart
         run: |

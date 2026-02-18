@@ -476,6 +476,31 @@
       <span data-i18n="navUsDebt">총 부채 vs S&amp;P 500</span>
     </button>
 
+    <button class="nav-item" data-view="vix">
+  <span class="nav-icon">😨</span>
+  <span data-i18n="navVix">VIX 공포지수</span>
+</button>
+
+    <button class="nav-item" data-view="yield10">
+  <span class="nav-icon">📉</span>
+  <span data-i18n="navYield10">10년물 국채금리</span>
+</button>
+
+    <button class="nav-item" data-view="dxy">
+  <span class="nav-icon">💵</span>
+  <span data-i18n="navDxy">달러인덱스 (DXY)</span>
+</button>
+
+    <button class="nav-item" data-view="m2">
+  <span class="nav-icon">💰</span>
+  <span data-i18n="navM2">M2 통화량</span>
+</button>
+
+    <button class="nav-item" data-view="cpi">
+  <span class="nav-icon">🔥</span>
+  <span data-i18n="navCpi">CPI 인플레이션</span>
+</button>
+
     <!-- ##CHART_NAV_ITEMS## add_chart.py가 여기 위에 nav-item을 삽입 -->
 
     <div class="nav-section" data-i18n="navSectionQuiz">경제 퀴즈</div>
@@ -703,6 +728,31 @@ const T = {
     loadingText:'데이터 로딩 중…',
     trendline:'추세선', overallR:'전체 r', rollingR:'롤링 r',
     sp500Label:'S&P 500', tgaLabel:'TGA 잔고 (B$)', fedLabel:'기준금리 (%)',
+    navVix:'VIX 공포지수', viewTitleVix:'VIX 공포지수 & S&P 500', viewSubVix:'자동 업데이트',
+    statVix:'VIX 공포지수', statVixSub:'',
+    chartMainVix:'S&P 500 & VIX 공포지수 — 시계열',
+    chartScatterVix:'VIX 공포지수 vs S&P 500 — 산점도 (선택 구간)',
+    vixLabel:'VIX 공포지수',
+    navYield10:'10년물 국채금리', viewTitleYield10:'10년물 국채금리 & S&P 500', viewSubYield10:'자동 업데이트',
+    statYield10:'10년물 국채금리', statYield10Sub:'%',
+    chartMainYield10:'S&P 500 & 10년물 국채금리 — 시계열',
+    chartScatterYield10:'10년물 국채금리 vs S&P 500 — 산점도 (선택 구간)',
+    yield10Label:'10년물 국채금리 (%)',
+    navDxy:'달러인덱스 (DXY)', viewTitleDxy:'달러인덱스 (DXY) & S&P 500', viewSubDxy:'자동 업데이트',
+    statDxy:'달러인덱스 (DXY)', statDxySub:'',
+    chartMainDxy:'S&P 500 & 달러인덱스 (DXY) — 시계열',
+    chartScatterDxy:'달러인덱스 (DXY) vs S&P 500 — 산점도 (선택 구간)',
+    dxyLabel:'달러인덱스 (DXY)',
+    navM2:'M2 통화량', viewTitleM2:'M2 통화량 & S&P 500', viewSubM2:'자동 업데이트',
+    statM2:'M2 통화량 YoY', statM2Sub:'%',
+    chartMainM2:'S&P 500 & M2 통화량 YoY 증가율 — 시계열',
+    chartScatterM2:'M2 통화량 YoY 증가율 vs S&P 500 — 산점도 (선택 구간)',
+    m2Label:'M2 통화량 YoY 증가율 (%)',
+    navCpi:'CPI 인플레이션', viewTitleCpi:'CPI 인플레이션 & S&P 500', viewSubCpi:'자동 업데이트',
+    statCpi:'CPI 인플레이션', statCpiSub:'%',
+    chartMainCpi:'S&P 500 & CPI 인플레이션 — 시계열',
+    chartScatterCpi:'CPI 인플레이션 vs S&P 500 — 산점도 (선택 구간)',
+    cpiLabel:'CPI 인플레이션 (%)',
     // ##CHART_TRANS_KO##
   },
   en: {
@@ -743,6 +793,31 @@ const T = {
     loadingText:'Loading data…',
     trendline:'Trendline', overallR:'Overall r', rollingR:'Rolling r',
     sp500Label:'S&P 500', tgaLabel:'TGA Balance (B$)', fedLabel:'Fed Rate (%)',
+    navVix:'VIX Fear Index', viewTitleVix:'VIX Fear Index & S&P 500', viewSubVix:'Auto-updated',
+    statVix:'VIX Fear Index', statVixSub:'',
+    chartMainVix:'S&P 500 & VIX Fear Index — Time Series',
+    chartScatterVix:'VIX Fear Index vs S&P 500 — Scatter (selected range)',
+    vixLabel:'VIX Fear Index',
+    navYield10:'10Y Treasury Yield', viewTitleYield10:'10Y Treasury Yield & S&P 500', viewSubYield10:'Auto-updated',
+    statYield10:'10Y Treasury Yield', statYield10Sub:'%',
+    chartMainYield10:'S&P 500 & 10Y Treasury Yield — Time Series',
+    chartScatterYield10:'10Y Treasury Yield vs S&P 500 — Scatter (selected range)',
+    yield10Label:'10Y Treasury Yield (%)',
+    navDxy:'Dollar Index (DXY)', viewTitleDxy:'Dollar Index (DXY) & S&P 500', viewSubDxy:'Auto-updated',
+    statDxy:'Dollar Index (DXY)', statDxySub:'',
+    chartMainDxy:'S&P 500 & Dollar Index (DXY) — Time Series',
+    chartScatterDxy:'Dollar Index (DXY) vs S&P 500 — Scatter (selected range)',
+    dxyLabel:'Dollar Index (DXY)',
+    navM2:'M2 Money Supply', viewTitleM2:'M2 Money Supply & S&P 500', viewSubM2:'Auto-updated',
+    statM2:'M2 YoY Growth', statM2Sub:'%',
+    chartMainM2:'S&P 500 & M2 YoY Growth — Time Series',
+    chartScatterM2:'M2 YoY Growth vs S&P 500 — Scatter (selected range)',
+    m2Label:'M2 YoY Growth (%)',
+    navCpi:'CPI Inflation', viewTitleCpi:'CPI Inflation & S&P 500', viewSubCpi:'Auto-updated',
+    statCpi:'CPI Inflation', statCpiSub:'%',
+    chartMainCpi:'S&P 500 & CPI Inflation — Time Series',
+    chartScatterCpi:'CPI Inflation vs S&P 500 — Scatter (selected range)',
+    cpiLabel:'CPI Inflation (%)',
     // ##CHART_TRANS_EN##
   },
   zh: {
@@ -783,6 +858,31 @@ const T = {
     loadingText:'数据加载中…',
     trendline:'趋势线', overallR:'总体r', rollingR:'滚动r',
     sp500Label:'标普500', tgaLabel:'TGA余额 (B$)', fedLabel:'基准利率 (%)',
+    navVix:'VIX恐慌指数', viewTitleVix:'VIX恐慌指数 & 标普500', viewSubVix:'自动更新',
+    statVix:'VIX恐慌指数', statVixSub:'',
+    chartMainVix:'标普500 & VIX恐慌指数 — 时间序列',
+    chartScatterVix:'VIX恐慌指数 vs 标普500 — 散点图 (选定区间)',
+    vixLabel:'VIX恐慌指数',
+    navYield10:'10年期国债收益率', viewTitleYield10:'10年期国债收益率 & 标普500', viewSubYield10:'自动更新',
+    statYield10:'10年期国债收益率', statYield10Sub:'%',
+    chartMainYield10:'标普500 & 10年期国债收益率 — 时间序列',
+    chartScatterYield10:'10年期国债收益率 vs 标普500 — 散点图 (选定区间)',
+    yield10Label:'10年期国债收益率 (%)',
+    navDxy:'美元指数(DXY)', viewTitleDxy:'美元指数(DXY) & 标普500', viewSubDxy:'自动更新',
+    statDxy:'美元指数(DXY)', statDxySub:'',
+    chartMainDxy:'标普500 & 美元指数(DXY) — 时间序列',
+    chartScatterDxy:'美元指数(DXY) vs 标普500 — 散点图 (选定区间)',
+    dxyLabel:'美元指数(DXY)',
+    navM2:'M2货币供应量', viewTitleM2:'M2货币供应量 & 标普500', viewSubM2:'自动更新',
+    statM2:'M2同比增速', statM2Sub:'%',
+    chartMainM2:'标普500 & M2同比增速 — 时间序列',
+    chartScatterM2:'M2同比增速 vs 标普500 — 散点图 (选定区间)',
+    m2Label:'M2同比增速 (%)',
+    navCpi:'CPI通货膨胀率', viewTitleCpi:'CPI通货膨胀率 & 标普500', viewSubCpi:'自动更新',
+    statCpi:'CPI通货膨胀率', statCpiSub:'%',
+    chartMainCpi:'标普500 & CPI通货膨胀率 — 时间序列',
+    chartScatterCpi:'CPI通货膨胀率 vs 标普500 — 散点图 (选定区间)',
+    cpiLabel:'CPI通货膨胀率 (%)',
     // ##CHART_TRANS_ZH##
   },
   ja: {
@@ -823,6 +923,31 @@ const T = {
     loadingText:'データ読み込み中…',
     trendline:'トレンドライン', overallR:'全体r', rollingR:'ローリングr',
     sp500Label:'S&P500', tgaLabel:'TGA残高 (B$)', fedLabel:'政策金利 (%)',
+    navVix:'VIX恐怖指数', viewTitleVix:'VIX恐怖指数 & S&P500', viewSubVix:'自動更新',
+    statVix:'VIX恐怖指数', statVixSub:'',
+    chartMainVix:'S&P500 & VIX恐怖指数 — 時系列',
+    chartScatterVix:'VIX恐怖指数 vs S&P500 — 散布図 (選択期間)',
+    vixLabel:'VIX恐怖指数',
+    navYield10:'10年国債利回り', viewTitleYield10:'10年国債利回り & S&P500', viewSubYield10:'自動更新',
+    statYield10:'10年国債利回り', statYield10Sub:'%',
+    chartMainYield10:'S&P500 & 10年国債利回り — 時系列',
+    chartScatterYield10:'10年国債利回り vs S&P500 — 散布図 (選択期間)',
+    yield10Label:'10年国債利回り (%)',
+    navDxy:'ドル指数(DXY)', viewTitleDxy:'ドル指数(DXY) & S&P500', viewSubDxy:'自動更新',
+    statDxy:'ドル指数(DXY)', statDxySub:'',
+    chartMainDxy:'S&P500 & ドル指数(DXY) — 時系列',
+    chartScatterDxy:'ドル指数(DXY) vs S&P500 — 散布図 (選択期間)',
+    dxyLabel:'ドル指数(DXY)',
+    navM2:'M2マネーサプライ', viewTitleM2:'M2マネーサプライ & S&P500', viewSubM2:'自動更新',
+    statM2:'M2前年比増加率', statM2Sub:'%',
+    chartMainM2:'S&P500 & M2前年比増加率 — 時系列',
+    chartScatterM2:'M2前年比増加率 vs S&P500 — 散布図 (選択期間)',
+    m2Label:'M2前年比増加率 (%)',
+    navCpi:'CPIインフレ率', viewTitleCpi:'CPIインフレ率 & S&P500', viewSubCpi:'自動更新',
+    statCpi:'CPIインフレ率', statCpiSub:'%',
+    chartMainCpi:'S&P500 & CPIインフレ率 — 時系列',
+    chartScatterCpi:'CPIインフレ率 vs S&P500 — 散布図 (選択期間)',
+    cpiLabel:'CPIインフレ率 (%)',
     // ##CHART_TRANS_JA##
   },
 };
@@ -902,6 +1027,81 @@ const VIEWS = {
     statVal: (d) => `${d?.toFixed(2)}%`,
   },
   // ##CHART_VIEWS##
+  cpi: {
+      file: 'cpi_data.json',
+      xKey: 'cpi',
+      xColor: '#FF5722',
+      yScale: -1,
+      fill: 'none',
+      hoverTmpl: '%{customdata:.2f}%',
+      scatterXFormat: v => `${v?.toFixed(2)}%`,
+      titleMain:    () => t('chartMainCpi'),
+      titleScatter: () => t('chartScatterCpi'),
+      xAxisLabel:   () => t('cpiLabel'),
+      statLabel:    () => t('statCpi'),
+      statSub:      () => t('statCpiSub'),
+      statVal:      (d) => `${d?.toFixed(2)}%`,
+  },
+  m2: {
+      file: 'm2_data.json',
+      xKey: 'm2',
+      xColor: '#4CAF50',
+      yScale: 1,
+      fill: 'tozeroy',
+      hoverTmpl: '%{y:.2f}%',
+      scatterXFormat: v => `${v?.toFixed(2)}%`,
+      titleMain:    () => t('chartMainM2'),
+      titleScatter: () => t('chartScatterM2'),
+      xAxisLabel:   () => t('m2Label'),
+      statLabel:    () => t('statM2'),
+      statSub:      () => t('statM2Sub'),
+      statVal:      (d) => `${d?.toFixed(2)}B`,
+  },
+  dxy: {
+      file: 'dxy_data.json',
+      xKey: 'dxy',
+      xColor: '#2196F3',
+      yScale: -1,
+      fill: 'none',
+      hoverTmpl: '%{customdata:.4g}',
+      scatterXFormat: v => `${v?.toFixed(2)}`,
+      titleMain:    () => t('chartMainDxy'),
+      titleScatter: () => t('chartScatterDxy'),
+      xAxisLabel:   () => t('dxyLabel'),
+      statLabel:    () => t('statDxy'),
+      statSub:      () => t('statDxySub'),
+      statVal:      (d) => `${d?.toFixed(2)}`,
+  },
+  yield10: {
+      file: 'yield10_data.json',
+      xKey: 'yield10',
+      xColor: '#FF9800',
+      yScale: -1,
+      fill: 'none',
+      hoverTmpl: '%{customdata:.2f}%',
+      scatterXFormat: v => `${v?.toFixed(2)}%`,
+      titleMain:    () => t('chartMainYield10'),
+      titleScatter: () => t('chartScatterYield10'),
+      xAxisLabel:   () => t('yield10Label'),
+      statLabel:    () => t('statYield10'),
+      statSub:      () => t('statYield10Sub'),
+      statVal:      (d) => `${d?.toFixed(2)}%`,
+  },
+  vix: {
+      file: 'vix_data.json',
+      xKey: 'vix',
+      xColor: '#E91E63',
+      yScale: -1,
+      fill: 'none',
+      hoverTmpl: '%{customdata:.4g}',
+      scatterXFormat: v => `${v?.toFixed(2)}`,
+      titleMain:    () => t('chartMainVix'),
+      titleScatter: () => t('chartScatterVix'),
+      xAxisLabel:   () => t('vixLabel'),
+      statLabel:    () => t('statVix'),
+      statSub:      () => t('statVixSub'),
+      statVal:      (d) => `${d?.toFixed(2)}`,
+  },
   us_debt: {
     file: 'us_debt_data.json',
     xKey: 'us_debt',
