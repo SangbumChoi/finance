@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>미국 재무부 TGA vs S&P 500</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      max-width: 1200px;
+      padding: 2rem 1.5rem 1rem;
+      border-bottom: 1px solid #21262d;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #e6edf3;
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .badge {
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-gold  { background: #2d2000; color: #FFD700; border: 1px solid #FFD70066; }
+    .badge-green { background: #00260f; color: #00E676; border: 1px solid #00E67666; }
+    .badge-blue  { background: #001a2e; color: #40C4FF; border: 1px solid #40C4FF66; }
+
+    main {
+      width: 100%;
+      max-width: 1200px;
+      padding: 1.5rem;
+    }
+
+    .chart-card {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-card img {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .meta {
+      margin-top: 0.75rem;
+      font-size: 0.82rem;
+      color: #8b949e;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-card {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+    }
+
+    .info-card h3 {
+      font-size: 0.8rem;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.4rem;
+    }
+
+    .info-card p {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #e6edf3;
+    }
+
+    .info-card .sub {
+      font-size: 0.8rem;
+      color: #8b949e;
+      margin-top: 0.2rem;
+    }
+
+    footer {
+      width: 100%;
+      max-width: 1200px;
+      padding: 1rem 1.5rem 2rem;
+      border-top: 1px solid #21262d;
+      font-size: 0.8rem;
+      color: #8b949e;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    a { color: #40C4FF; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏦 미국 재무부 TGA 잔고 &amp; S&amp;P 500 상관관계</h1>
+  <p>Treasury General Account (TGA) balance vs S&amp;P 500 — 매 영업일 자동 업데이트</p>
+  <div class="badge-row">
+    <span class="badge badge-gold">TGA Balance</span>
+    <span class="badge badge-green">S&amp;P 500</span>
+    <span class="badge badge-blue">Pearson Correlation</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>데이터 소스 (TGA)</h3>
+      <p>US Treasury</p>
+      <p class="sub"><a href="https://fiscaldata.treasury.gov" target="_blank">fiscaldata.treasury.gov</a></p>
+    </div>
+    <div class="info-card">
+      <h3>데이터 소스 (지수)</h3>
+      <p>Yahoo Finance</p>
+      <p class="sub">^GSPC · 일별 종가</p>
+    </div>
+    <div class="info-card">
+      <h3>업데이트 주기</h3>
+      <p>매 영업일</p>
+      <p class="sub">GitHub Actions 자동 실행 (UTC 01:00)</p>
+    </div>
+    <div class="info-card">
+      <h3>마지막 업데이트</h3>
+      <p><span id="updated">—</span></p>
+      <p class="sub">GitHub Actions에 의해 자동 갱신</p>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <img
+      src="tga_sp500_correlation.png"
+      alt="TGA 잔고 vs S&P 500 상관관계 차트"
+      loading="lazy"
+    />
+    <div class="meta">
+      <span>📊 4-패널 차트: 시계열 오버레이 · TGA 잔고 · 롤링 상관계수 · 산점도</span>
+      <span>⏰ 이미지 캐시 방지: <a href="tga_sp500_correlation.png?v=latest" target="_blank">원본 열기</a></span>
+    </div>
+  </div>
+
+  <div class="info-card" style="margin-bottom:1.5rem">
+    <h3>📌 차트 해석 가이드</h3>
+    <p style="font-size:0.9rem; font-weight:400; line-height:1.7; margin-top:0.5rem; color:#c9d1d9;">
+      <strong style="color:#FFD700">TGA 잔고</strong>는 미국 재무부가 연방준비은행에 보유한 운영 자금입니다.
+      잔고가 줄어들면 재무부가 시중에 자금을 공급하는 효과가 생겨 유동성이 늘어납니다.
+      반대로 잔고가 급격히 늘어나면 시중 자금이 흡수됩니다.<br><br>
+      <strong style="color:#40C4FF">롤링 상관계수</strong>가 양(+)이면 TGA와 S&amp;P 500이 같은 방향으로 움직이고,
+      음(-)이면 반대 방향입니다. 부채 한도 협상 시즌에 특히 큰 변동이 나타납니다.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <span>데이터: <a href="https://fiscaldata.treasury.gov" target="_blank">US Treasury Fiscal Data</a> &amp; <a href="https://finance.yahoo.com" target="_blank">Yahoo Finance</a></span>
+  <span>소스 코드: <a href="https://github.com/danelcsb/finance" target="_blank">github.com/danelcsb/finance</a></span>
+</footer>
+
+</body>
+</html>
