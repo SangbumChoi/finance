@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pages: write               # Pages 재빌드 트리거용
 
 jobs:
   build-and-deploy:
@@ -39,6 +40,11 @@ jobs:
       - name: Generate Fed Rate chart + JSON
         run: python functions/fed_rate_sp500_chart.py
 
+      - name: Generate US Total Debt chart + JSON
+        run: python functions/us_debt_sp500_chart.py
+
+      # ##CHART_STEPS## add_chart.py가 여기 위에 step을 삽입
+
       - name: Commit and push updated chart
         run: |
           git config user.name  "github-actions[bot]"
@@ -46,3 +52,11 @@ jobs:
           git add docs/
           git diff --cached --quiet || git commit -m "chore: update charts $(date -u +%Y-%m-%d)"
           git push
+
+      - name: Trigger GitHub Pages rebuild
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/pages/builds \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print('Pages 빌드:', d.get('status', d))"

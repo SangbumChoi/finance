@@ -1,0 +1,82 @@
+---
+description: finance 프로젝트에 새 상관관계 차트를 추가하는 전체 워크플로우 (Python 스크립트 생성, index.html 패치, GitHub Actions 업데이트)
+globs: functions/*.py, docs/index.html, .github/workflows/*.yml, scripts/add_chart.py
+alwaysApply: false
+---
+
+# finance 차트 추가 워크플로우
+
+새 지표 차트를 추가할 때는 **`scripts/add_chart.py`를 먼저 실행**해 보일러플레이트를 자동 생성한다.
+
+## CLI 실행 (빠른 시작)
+
+```bash
+# yfinance 기반 (예: VIX)
+python scripts/add_chart.py vix \
+    --emoji 😨 --color "#E91E63" --invert \
+    --suffix "%" --format ".2f" \
+    --label-ko "VIX 공포지수" --label-en "VIX Fear Index" \
+    --label-zh "VIX恐慌指数" --label-ja "VIX恐怖指数" \
+    --source yfinance --ticker "^VIX"
+
+# FRED 기반 (예: CPI)
+python scripts/add_chart.py cpi \
+    --emoji 🔥 --color "#FF5722" --invert \
+    --suffix "%" --label-ko "CPI 인플레이션" --label-en "CPI Inflation" \
+    --label-zh "CPI通货膨胀" --label-ja "CPIインフレ" \
+    --source fred --fred-series CPIAUCSL
+
+# 검증
+python scripts/add_chart.py <key> --validate
+```
+
+## CLI가 자동으로 처리하는 것
+
+| 항목 | 파일 |
+|------|------|
+| Python 차트 스크립트 템플릿 | `functions/{key}_sp500_chart.py` |
+| 사이드바 nav 항목 | `docs/index.html` |
+| VIEWS 객체 항목 | `docs/index.html` |
+| 4개 언어 번역 키 | `docs/index.html` |
+| GitHub Actions step | `.github/workflows/update_chart.yml` |
+
+## CLI 실행 후 수동 완료 항목
+
+1. `functions/{key}_sp500_chart.py` — `fetch_{key}()` 함수 로직 확인/수정
+2. 스크립트 실행: `MPLBACKEND=Agg python3 functions/{key}_sp500_chart.py`
+3. JSON 생성 확인: `ls docs/{key}_data.json`
+4. 브라우저 확인: `cd docs && python3 -m http.server 8000`
+
+## 주요 규칙
+
+### `yScale` — y축 반전 방식
+Plotly의 `autorange:'reversed'` + `overlaying:'y'` 조합은 신뢰도가 낮다.
+반전이 필요한 지표(`--invert`)는 **데이터를 음수 변환** (`yScale: -1`) + **커스텀 틱**을 사용한다.
+
+```javascript
+// ✅ 올바른 방법 (기준금리, VIX 등)
+yScale: -1,
+fill: 'none',   // tozeroy가 전 영역을 채워버리므로 제거
+hoverTmpl: '%{customdata:.2f}%',  // customdata에 원본 양수값
+
+// ❌ 사용 금지
+autorange: 'reversed'  // overlaying:'y'에서 무시됨
+```
+
+### `hoverTmpl`
+- 반전 없는 지표: `'%{y:,.1f}B'` 또는 `'%{y:.2f}%'`
+- 반전 지표 (`yScale: -1`): `'%{customdata:.2f}%'` (y가 음수이므로 customdata 사용)
+
+### 차트 아이디어 (추천 KEY 목록)
+
+| KEY | 지표 | 소스 | `--invert` |
+|-----|------|------|-----------|
+| `vix` | VIX 공포지수 | yfinance `^VIX` | ✅ |
+| `dxy` | 달러인덱스 | yfinance `DX-Y.NYB` | ✅ |
+| `yield10` | 10년물 국채금리 | FRED `GS10` | ✅ |
+| `m2` | M2 통화량 | FRED `M2SL` | ❌ |
+| `cpi` | CPI | FRED `CPIAUCSL` | ✅ |
+| `unemployment` | 실업률 | FRED `UNRATE` | ✅ |
+| `oil` | WTI 원유 | yfinance `CL=F` | ❌ |
+| `gold` | 금 가격 | yfinance `GC=F` | ❌ |
+| `btc` | 비트코인 | yfinance `BTC-USD` | ❌ |

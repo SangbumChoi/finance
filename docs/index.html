@@ -471,6 +471,12 @@
       <span class="nav-icon">📈</span>
       <span data-i18n="navFed">기준금리 vs S&amp;P 500</span>
     </button>
+    <button class="nav-item" data-view="us_debt">
+      <span class="nav-icon">🏛️</span>
+      <span data-i18n="navUsDebt">총 부채 vs S&amp;P 500</span>
+    </button>
+
+    <!-- ##CHART_NAV_ITEMS## add_chart.py가 여기 위에 nav-item을 삽입 -->
 
     <div class="nav-section" data-i18n="navSectionQuiz">경제 퀴즈</div>
 
@@ -659,6 +665,13 @@ const T = {
   ko: {
     sidebarTitle:'매크로 분석', navSection:'시장 지표',
     navTga:'TGA vs S&P 500', navFed:'기준금리 vs S&P 500',
+    navUsDebt:'총 부채 vs S&P 500',
+    viewTitleUsDebt:'미국 총 부채 규모 & S&P 500',
+    viewSubUsDebt:'분기별 업데이트 · FRED (GFDEBTN)',
+    statUsDebt:'현재 총 부채', statUsDebtSub:'조 달러 (T$)',
+    chartMainUsDebt:'S&P 500 & 미국 총 부채 — 시계열',
+    chartScatterUsDebt:'미국 총 부채 vs S&P 500 — 산점도 (선택 구간)',
+    usDebtLabel:'총 부채 (T$)',
     navSectionQuiz:'경제 퀴즈', navQuiz:'O/X 퀴즈',
     quizLoading:'퀴즈를 불러오는 중...',
     quizAnswerTrue:'맞습니다', quizAnswerFalse:'틀렸습니다',
@@ -690,10 +703,18 @@ const T = {
     loadingText:'데이터 로딩 중…',
     trendline:'추세선', overallR:'전체 r', rollingR:'롤링 r',
     sp500Label:'S&P 500', tgaLabel:'TGA 잔고 (B$)', fedLabel:'기준금리 (%)',
+    // ##CHART_TRANS_KO##
   },
   en: {
     sidebarTitle:'Macro Analytics', navSection:'Market Indicators',
     navTga:'TGA vs S&P 500', navFed:'Fed Rate vs S&P 500',
+    navUsDebt:'Total Debt vs S&P 500',
+    viewTitleUsDebt:'US Total Federal Debt & S&P 500',
+    viewSubUsDebt:'Quarterly update · FRED (GFDEBTN)',
+    statUsDebt:'Total Federal Debt', statUsDebtSub:'Trillion USD (T$)',
+    chartMainUsDebt:'S&P 500 & US Total Debt — Time Series',
+    chartScatterUsDebt:'US Total Debt vs S&P 500 — Scatter (selected range)',
+    usDebtLabel:'Total Debt (T$)',
     navSectionQuiz:'Economy Quiz', navQuiz:'O/X Quiz',
     quizLoading:'Loading quiz...', quizAnswerTrue:'True', quizAnswerFalse:'False',
     quizNext:'Next Question →', quizCorrect:'Correct', quizIncorrect:'Wrong', quizAccuracy:'Accuracy',
@@ -722,10 +743,18 @@ const T = {
     loadingText:'Loading data…',
     trendline:'Trendline', overallR:'Overall r', rollingR:'Rolling r',
     sp500Label:'S&P 500', tgaLabel:'TGA Balance (B$)', fedLabel:'Fed Rate (%)',
+    // ##CHART_TRANS_EN##
   },
   zh: {
     sidebarTitle:'宏观分析', navSection:'市场指标',
     navTga:'TGA vs 标普500', navFed:'联邦基准利率 vs 标普500',
+    navUsDebt:'总债务 vs 标普500',
+    viewTitleUsDebt:'美国联邦总债务 & 标普500',
+    viewSubUsDebt:'按季度更新 · FRED (GFDEBTN)',
+    statUsDebt:'当前总债务', statUsDebtSub:'万亿美元 (T$)',
+    chartMainUsDebt:'标普500 & 美国总债务 — 时间序列',
+    chartScatterUsDebt:'美国总债务 vs 标普500 — 散点图 (选定区间)',
+    usDebtLabel:'总债务 (T$)',
     navSectionQuiz:'经济测验', navQuiz:'O/X 测验',
     quizLoading:'加载中...', quizAnswerTrue:'正确', quizAnswerFalse:'错误',
     quizNext:'下一题 →', quizCorrect:'答对', quizIncorrect:'答错', quizAccuracy:'正确率',
@@ -754,10 +783,18 @@ const T = {
     loadingText:'数据加载中…',
     trendline:'趋势线', overallR:'总体r', rollingR:'滚动r',
     sp500Label:'标普500', tgaLabel:'TGA余额 (B$)', fedLabel:'基准利率 (%)',
+    // ##CHART_TRANS_ZH##
   },
   ja: {
     sidebarTitle:'マクロ分析', navSection:'市場指標',
     navTga:'TGA vs S&P500', navFed:'政策金利 vs S&P500',
+    navUsDebt:'総債務 vs S&P500',
+    viewTitleUsDebt:'米国連邦総債務 & S&P500',
+    viewSubUsDebt:'四半期更新 · FRED (GFDEBTN)',
+    statUsDebt:'現在の総債務', statUsDebtSub:'兆ドル (T$)',
+    chartMainUsDebt:'S&P500 & 米国総債務 — 時系列',
+    chartScatterUsDebt:'米国総債務 vs S&P500 — 散布図 (選択期間)',
+    usDebtLabel:'総債務 (T$)',
     navSectionQuiz:'経済クイズ', navQuiz:'O/X クイズ',
     quizLoading:'読み込み中...', quizAnswerTrue:'正しい', quizAnswerFalse:'誤り',
     quizNext:'次の問題 →', quizCorrect:'正解', quizIncorrect:'不正解', quizAccuracy:'正答率',
@@ -786,6 +823,7 @@ const T = {
     loadingText:'データ読み込み中…',
     trendline:'トレンドライン', overallR:'全体r', rollingR:'ローリングr',
     sp500Label:'S&P500', tgaLabel:'TGA残高 (B$)', fedLabel:'政策金利 (%)',
+    // ##CHART_TRANS_JA##
   },
 };
 
@@ -862,6 +900,23 @@ const VIEWS = {
     statLabel: () => t('statXFed'),
     statSub: () => t('statXSubFed'),
     statVal: (d) => `${d?.toFixed(2)}%`,
+  },
+  // ##CHART_VIEWS##
+  us_debt: {
+    file: 'us_debt_data.json',
+    xKey: 'us_debt',
+    xColor: RED,
+    yScale: 1,
+    fill: 'tozeroy',
+    hoverTmpl: '$%{y:.1f}T',
+    xTickPrefix: '$', xTickSuffix: 'T', xTickFormat: '.1f',
+    scatterXFormat: v => `$${v?.toFixed(1)}T`,
+    titleMain: () => t('chartMainUsDebt'),
+    titleScatter: () => t('chartScatterUsDebt'),
+    xAxisLabel: () => t('usDebtLabel'),
+    statLabel: () => t('statUsDebt'),
+    statSub: () => t('statUsDebtSub'),
+    statVal: (d) => `$${d?.toFixed(1)}T`,
   },
 };
 
@@ -1090,9 +1145,10 @@ function updateStats() {
 // ═══════════════════════════════════════════
 function updateViewText() {
   const vDef = VIEWS[currentView];
-  const isTga = currentView === 'tga';
-  document.getElementById('view-title').textContent = t(isTga?'viewTitleTga':'viewTitleFed');
-  document.getElementById('view-sub').textContent   = t(isTga?'viewSubTga':'viewSubFed');
+  const titleKey = { tga:'viewTitleTga', fed:'viewTitleFed', us_debt:'viewTitleUsDebt' };
+  const subKey   = { tga:'viewSubTga',   fed:'viewSubFed',   us_debt:'viewSubUsDebt'   };
+  document.getElementById('view-title').textContent = t(titleKey[currentView] ?? 'viewTitleTga');
+  document.getElementById('view-sub').textContent   = t(subKey[currentView]   ?? 'viewSubTga');
   document.getElementById('title-main').textContent    = vDef.titleMain();
   document.getElementById('title-scatter').textContent = vDef.titleScatter();
   document.getElementById('title-corr').textContent    = t('chartCorr');
