@@ -837,9 +837,9 @@ const VIEWS = {
     file: 'data.json',
     xKey: 'tga',
     xColor: GOLD,
-    xInvert: false,
-    xTickPrefix: '$', xTickSuffix: 'B', xTickFormat: ',.1f',
-    hoverX: v => `$${v?.toFixed(1)}B`,
+    yScale: 1,            // 데이터 변환 없음
+    fill: 'tozeroy',
+    hoverTmpl: '$%{y:,.1f}B',
     scatterXFormat: v => `$${v?.toFixed(1)}B`,
     titleMain: () => t('chartMainTga'),
     titleScatter: () => t('chartScatterTga'),
@@ -852,9 +852,9 @@ const VIEWS = {
     file: 'fed_rate_data.json',
     xKey: 'fed_rate',
     xColor: ORANGE,
-    xInvert: true,
-    xTickPrefix: '', xTickSuffix: '%', xTickFormat: '.2f',
-    hoverX: v => `${v?.toFixed(2)}%`,
+    yScale: -1,           // 음수 변환 → Plotly의 autorange가 자연스럽게 반전 축을 만듦
+    fill: 'none',         // 음수 변환 시 tozeroy가 전 영역을 채워버려 제거
+    hoverTmpl: '%{customdata:.2f}%', // customdata에 원본 양수값 저장
     scatterXFormat: v => `${v?.toFixed(2)}%`,
     titleMain: () => t('chartMainFed'),
     titleScatter: () => t('chartScatterFed'),
@@ -909,6 +909,25 @@ function getSlice() {
 // ═══════════════════════════════════════════
 function drawMain(slice) {
   const vDef = VIEWS[currentView];
+  const scale = vDef.yScale ?? 1;
+  const isInverted = scale === -1;
+
+  // yScale=-1(기준금리)이면 데이터를 음수로 변환 → autorange가 자연스럽게 반전 축을 생성
+  // Plotly의 range[0]>range[1] 정규화 문제를 우회하는 가장 확실한 방법
+  const xPlotData = slice.x.map(v => (v == null ? null : v * scale));
+
+  // 기준금리 호버: customdata에 원본 양수 값 저장
+  const y2Trace = {
+    x: slice.dates, y: xPlotData,
+    name: vDef.xAxisLabel(), type:'scatter', mode:'lines',
+    line:{color:vDef.xColor,width:1.5},
+    fill: vDef.fill ?? 'tozeroy',
+    fillcolor: vDef.xColor+'22',
+    yaxis:'y2',
+    hovertemplate:`<b>${vDef.xAxisLabel()}</b>: ${vDef.hoverTmpl}<extra></extra>`,
+    ...(isInverted ? { customdata: slice.x } : {}),
+  };
+
   const traces = [
     {
       x: slice.dates, y: slice.sp500,
@@ -916,33 +935,31 @@ function drawMain(slice) {
       line:{color:GREEN,width:1.8}, yaxis:'y',
       hovertemplate:`<b>${t('sp500Label')}</b>: %{y:,.0f}<extra></extra>`,
     },
-    {
-      x: slice.dates, y: slice.x,
-      name: vDef.xAxisLabel(), type:'scatter', mode:'lines',
-      line:{color:vDef.xColor,width:1.5},
-      fill:'tozeroy', fillcolor: vDef.xColor+'22',
-      yaxis:'y2',
-      hovertemplate:`<b>${vDef.xAxisLabel()}</b>: ${vDef.hoverTmpl}<extra></extra>`,
-    },
+    y2Trace,
   ];
-  // y2 축 범위: xInvert=true(기준금리)이면 데이터 기반으로 명시적 reversed range 설정
-  // autorange:'reversed' + overlaying:'y' 조합은 Plotly에서 신뢰도가 낮음
-  const xFinite = slice.x.filter(v => v != null && isFinite(v));
-  const xMin = xFinite.length ? Math.min(...xFinite) : 0;
-  const xMax = xFinite.length ? Math.max(...xFinite) : 1;
-  const xPad = (xMax - xMin) * 0.08 || 0.1;
-  const y2Range = vDef.xInvert
-    ? [xMax + xPad, xMin - xPad]   // 높은 값이 아래 → 금리↑일 때 선이 아래로
-    : undefined;
+
+  // 기준금리 y2 축: 음수 데이터에 맞는 커스텀 틱 레이블 (위: 0%, 아래: 6%)
+  let y2Extra = {};
+  if (isInverted) {
+    const xFinite = slice.x.filter(v => v != null && isFinite(v));
+    const xMin = xFinite.reduce((a, b) => Math.min(a, b), Infinity);
+    const xMax = xFinite.reduce((a, b) => Math.max(a, b), -Infinity);
+    const step = (xMax - xMin) > 3 ? 1 : 0.5;
+    const tickvals = [], ticktext = [];
+    for (let v = 0; v <= Math.ceil(xMax) + step; v = Math.round((v + step) * 1e6) / 1e6) {
+      tickvals.push(-v);   // 음수 위치
+      ticktext.push(`${v.toFixed(step < 1 ? 1 : 0)}%`);  // 양수 레이블
+    }
+    y2Extra = { tickmode:'array', tickvals, ticktext };
+  }
 
   const y2 = {
     gridcolor:'#1e2933', showgrid:false, linecolor:'#263238', tickcolor:GRAY,
     title:{text: vDef.xAxisLabel(), font:{color:vDef.xColor}},
-    tickprefix: vDef.xTickPrefix, ticksuffix: vDef.xTickSuffix,
-    tickformat: vDef.xTickFormat,
     tickfont:{color:vDef.xColor}, overlaying:'y', side:'right',
-    autorange: vDef.xInvert ? false : true,
-    ...(y2Range ? { range: y2Range } : {}),
+    autorange: true,   // 변환된 데이터 기준 자동 범위 산출
+    ...(!isInverted ? { tickprefix: vDef.xTickPrefix ?? '', ticksuffix: vDef.xTickSuffix ?? '' } : {}),
+    ...y2Extra,
   };
   const layout = {
     ...baseLayout,

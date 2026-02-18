@@ -107,6 +107,10 @@ pre-commit run --all-files
 
 ```
 finance/
+├── .cursor/
+│   └── skills/
+│       └── finance-chart-add/        # 새 차트 추가 AI 가이드 (Cursor Agent)
+│           └── SKILL.md
 ├── .github/
 │   └── workflows/
 │       └── update_chart.yml          # GitHub Actions 스케줄
@@ -123,3 +127,44 @@ finance/
 ├── .pre-commit-config.yaml
 └── README.md
 ```
+
+---
+
+## Cursor AI 개발 가이드
+
+이 프로젝트는 [Cursor](https://cursor.sh) Agent Skill을 포함합니다.
+`.cursor/skills/finance-chart-add/SKILL.md`가 자동으로 적용되어,
+새 차트 추가 작업 시 AI가 프로젝트 구조에 맞는 전체 워크플로우를 안내합니다.
+
+### 새 차트 추가하기
+
+Cursor Chat에서 다음과 같이 요청하면 됩니다:
+
+```
+VIX 공포지수 vs S&P 500 차트 추가해줘
+```
+
+AI가 아래 단계를 자동으로 안내합니다:
+
+| 단계 | 작업 |
+|------|------|
+| 1 | `functions/{key}_sp500_chart.py` 스크립트 작성 |
+| 2 | 로컬 실행 → `docs/{key}_data.json` 생성 확인 |
+| 3 | `docs/index.html` — 사이드바 nav 항목 추가 |
+| 4 | `docs/index.html` — `VIEWS` 객체 항목 추가 |
+| 5 | `docs/index.html` — 4개 언어 번역 키 추가 (ko/en/zh/ja) |
+| 6 | `.github/workflows/update_chart.yml` — Actions step 추가 |
+
+### 추가 가능한 차트 아이디어
+
+| KEY | 지표 | 데이터 소스 |
+|-----|------|-------------|
+| `vix` | VIX 공포지수 | yfinance `^VIX` |
+| `dxy` | 달러인덱스 (DXY) | yfinance `DX-Y.NYB` |
+| `yield10` | 미국 10년물 국채금리 | FRED `GS10` |
+| `yield_spread` | 장단기 스프레드 (10Y-2Y) | FRED `T10Y2Y` |
+| `m2` | M2 통화량 | FRED `M2SL` |
+| `cpi` | CPI 인플레이션 | FRED `CPIAUCSL` |
+| `oil` | 원유가격 (WTI) | yfinance `CL=F` |
+| `gold` | 금 가격 | yfinance `GC=F` |
+| `btc` | 비트코인 | yfinance `BTC-USD` |
