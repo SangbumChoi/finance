@@ -4,204 +4,659 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>미국 재무부 TGA vs S&P 500</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --border:  #21262d;
+      --text:    #c9d1d9;
+      --muted:   #8b949e;
+      --gold:    #FFD700;
+      --green:   #00E676;
+      --blue:    #40C4FF;
+      --red:     #FF5252;
+    }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      background: #0d1117;
-      color: #c9d1d9;
+      background: var(--bg);
+      color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
 
+    /* ── Header ── */
     header {
-      width: 100%;
-      max-width: 1200px;
-      padding: 2rem 1.5rem 1rem;
-      border-bottom: 1px solid #21262d;
-    }
-
-    header h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #e6edf3;
-    }
-
-    header p {
-      margin-top: 0.4rem;
-      font-size: 0.9rem;
-      color: #8b949e;
-    }
-
-    .badge-row {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem 2rem;
       display: flex;
+      align-items: center;
+      justify-content: space-between;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.8rem;
+      gap: 0.8rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
+    .header-left h1 { font-size: 1.1rem; font-weight: 700; color: #e6edf3; }
+    .header-left p  { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+
+    .badge-row { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .badge {
-      padding: 0.2rem 0.6rem;
+      padding: 0.18rem 0.6rem;
       border-radius: 999px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
+    }
+    .badge-gold  { background: #2d200066; color: var(--gold);  border: 1px solid #FFD70044; }
+    .badge-green { background: #00260f66; color: var(--green); border: 1px solid #00E67644; }
+    .badge-blue  { background: #001a2e66; color: var(--blue);  border: 1px solid #40C4FF44; }
+    .badge-red   { background: #2e000066; color: var(--red);   border: 1px solid #FF525244; }
+
+    /* ── Range controls ── */
+    .range-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.7rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .range-bar label { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+
+    .btn-group { display: flex; gap: 0.3rem; }
+    .rng-btn {
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .rng-btn:hover  { border-color: var(--blue); color: var(--blue); }
+    .rng-btn.active { border-color: var(--blue); background: #001a2e; color: var(--blue); font-weight: 700; }
+
+    .date-inputs { display: flex; align-items: center; gap: 0.4rem; }
+    .date-inputs input[type="date"] {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.28rem 0.5rem;
+      font-size: 0.8rem;
+    }
+    .date-inputs span { color: var(--muted); font-size: 0.8rem; }
+
+    .apply-btn {
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--blue);
+      background: #001a2e;
+      color: var(--blue);
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .apply-btn:hover { background: #003060; }
+
+    /* ── Stat cards ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      padding: 1.2rem 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+    }
+    .stat-card .label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .stat-card .value { font-size: 1.25rem; font-weight: 700; color: #e6edf3; margin-top: 0.3rem; }
+    .stat-card .sub   { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+
+    /* ── Charts ── */
+    main { padding: 0 2rem 2rem; }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.5rem;
+      margin-bottom: 1.2rem;
+      overflow: hidden;
+    }
+
+    .chart-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 0.6rem 0.8rem 0;
       letter-spacing: 0.03em;
     }
 
-    .badge-gold  { background: #2d2000; color: #FFD700; border: 1px solid #FFD70066; }
-    .badge-green { background: #00260f; color: #00E676; border: 1px solid #00E67666; }
-    .badge-blue  { background: #001a2e; color: #40C4FF; border: 1px solid #40C4FF66; }
+    .plotly-chart { width: 100%; }
 
-    main {
-      width: 100%;
-      max-width: 1200px;
-      padding: 1.5rem;
-    }
-
-    .chart-card {
-      background: #161b22;
-      border: 1px solid #21262d;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .chart-card img {
-      width: 100%;
-      border-radius: 8px;
-      display: block;
-    }
-
-    .meta {
-      margin-top: 0.75rem;
-      font-size: 0.82rem;
-      color: #8b949e;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .info-card {
-      background: #161b22;
-      border: 1px solid #21262d;
-      border-radius: 10px;
-      padding: 1rem 1.2rem;
-    }
-
-    .info-card h3 {
-      font-size: 0.8rem;
-      color: #8b949e;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 0.4rem;
-    }
-
-    .info-card p {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #e6edf3;
-    }
-
-    .info-card .sub {
-      font-size: 0.8rem;
-      color: #8b949e;
-      margin-top: 0.2rem;
-    }
-
+    /* ── Footer ── */
     footer {
-      width: 100%;
-      max-width: 1200px;
-      padding: 1rem 1.5rem 2rem;
-      border-top: 1px solid #21262d;
-      font-size: 0.8rem;
-      color: #8b949e;
+      border-top: 1px solid var(--border);
+      padding: 1rem 2rem;
+      font-size: 0.78rem;
+      color: var(--muted);
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 0.5rem;
     }
+    footer a { color: var(--blue); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
-    a { color: #40C4FF; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    /* ── Loading ── */
+    #loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 60vh;
+      flex-direction: column;
+      gap: 1rem;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #app { display: none; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>🏦 미국 재무부 TGA 잔고 &amp; S&amp;P 500 상관관계</h1>
-  <p>Treasury General Account (TGA) balance vs S&amp;P 500 — 매 영업일 자동 업데이트</p>
-  <div class="badge-row">
-    <span class="badge badge-gold">TGA Balance</span>
-    <span class="badge badge-green">S&amp;P 500</span>
-    <span class="badge badge-blue">Pearson Correlation</span>
-  </div>
-</header>
+<!-- Loading -->
+<div id="loading">
+  <div class="spinner"></div>
+  <span>데이터 로딩 중…</span>
+</div>
 
-<main>
+<!-- App -->
+<div id="app">
 
-  <div class="info-grid">
-    <div class="info-card">
-      <h3>데이터 소스 (TGA)</h3>
-      <p>US Treasury</p>
-      <p class="sub"><a href="https://fiscaldata.treasury.gov" target="_blank">fiscaldata.treasury.gov</a></p>
+  <header>
+    <div class="header-left">
+      <h1>🏦 미국 재무부 TGA 잔고 &amp; S&amp;P 500 상관관계</h1>
+      <p>최종 업데이트: <span id="updated-date">—</span> &nbsp;·&nbsp; 매 영업일 자동 갱신</p>
     </div>
-    <div class="info-card">
-      <h3>데이터 소스 (지수)</h3>
-      <p>Yahoo Finance</p>
-      <p class="sub">^GSPC · 일별 종가</p>
+    <div class="badge-row">
+      <span class="badge badge-gold">TGA Balance</span>
+      <span class="badge badge-green">S&amp;P 500</span>
+      <span class="badge badge-blue">Pearson r</span>
+      <span class="badge badge-red">Rolling Corr</span>
     </div>
-    <div class="info-card">
-      <h3>업데이트 주기</h3>
-      <p>매 영업일</p>
-      <p class="sub">GitHub Actions 자동 실행 (UTC 01:00)</p>
-    </div>
-    <div class="info-card">
-      <h3>마지막 업데이트</h3>
-      <p><span id="updated">—</span></p>
-      <p class="sub">GitHub Actions에 의해 자동 갱신</p>
-    </div>
-  </div>
+  </header>
 
-  <div class="chart-card">
-    <img
-      src="tga_sp500_correlation.png"
-      alt="TGA 잔고 vs S&P 500 상관관계 차트"
-      loading="lazy"
-    />
-    <div class="meta">
-      <span>📊 4-패널 차트: 시계열 오버레이 · TGA 잔고 · 롤링 상관계수 · 산점도</span>
-      <span>⏰ 이미지 캐시 방지: <a href="tga_sp500_correlation.png?v=latest" target="_blank">원본 열기</a></span>
+  <!-- Range controls -->
+  <div class="range-bar">
+    <label>기간 선택</label>
+    <div class="btn-group" id="range-btns">
+      <button class="rng-btn" data-months="3">3M</button>
+      <button class="rng-btn" data-months="6">6M</button>
+      <button class="rng-btn" data-months="12">1Y</button>
+      <button class="rng-btn active" data-months="0">전체</button>
+    </div>
+    <div class="date-inputs">
+      <input type="date" id="date-from" />
+      <span>~</span>
+      <input type="date" id="date-to" />
+      <button class="apply-btn" id="apply-range">적용</button>
     </div>
   </div>
 
-  <div class="info-card" style="margin-bottom:1.5rem">
-    <h3>📌 차트 해석 가이드</h3>
-    <p style="font-size:0.9rem; font-weight:400; line-height:1.7; margin-top:0.5rem; color:#c9d1d9;">
-      <strong style="color:#FFD700">TGA 잔고</strong>는 미국 재무부가 연방준비은행에 보유한 운영 자금입니다.
-      잔고가 줄어들면 재무부가 시중에 자금을 공급하는 효과가 생겨 유동성이 늘어납니다.
-      반대로 잔고가 급격히 늘어나면 시중 자금이 흡수됩니다.<br><br>
-      <strong style="color:#40C4FF">롤링 상관계수</strong>가 양(+)이면 TGA와 S&amp;P 500이 같은 방향으로 움직이고,
-      음(-)이면 반대 방향입니다. 부채 한도 협상 시즌에 특히 큰 변동이 나타납니다.
-    </p>
+  <!-- Stat cards -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">TGA 현재 잔고</div>
+      <div class="value" id="stat-tga">—</div>
+      <div class="sub">십억 달러 (B$)</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">S&amp;P 500 현재</div>
+      <div class="value" id="stat-sp500">—</div>
+      <div class="sub">최신 종가</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">전체 Pearson r</div>
+      <div class="value" id="stat-corr">—</div>
+      <div class="sub" id="stat-pval">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">선택 구간 r</div>
+      <div class="value" id="stat-range-corr">—</div>
+      <div class="sub">현재 선택 구간 기준</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">데이터 시작일</div>
+      <div class="value" id="stat-start">—</div>
+      <div class="sub">TGA 데이터 제공 시작</div>
+    </div>
   </div>
 
-</main>
+  <main>
+    <!-- Chart 1: Dual axis -->
+    <div class="chart-card">
+      <div class="chart-title">S&amp;P 500 &amp; TGA 잔고 — 시계열</div>
+      <div id="chart-main" class="plotly-chart"></div>
+    </div>
 
-<footer>
-  <span>데이터: <a href="https://fiscaldata.treasury.gov" target="_blank">US Treasury Fiscal Data</a> &amp; <a href="https://finance.yahoo.com" target="_blank">Yahoo Finance</a></span>
-  <span>소스 코드: <a href="https://github.com/danelcsb/finance" target="_blank">github.com/danelcsb/finance</a></span>
-</footer>
+    <!-- Chart 2: Rolling correlation -->
+    <div class="chart-card">
+      <div class="chart-title">6개월 롤링 상관계수 (Pearson r)</div>
+      <div id="chart-corr" class="plotly-chart"></div>
+    </div>
 
+    <!-- Chart 3: Scatter -->
+    <div class="chart-card">
+      <div class="chart-title">TGA 잔고 vs S&amp;P 500 — 산점도 (선택 구간)</div>
+      <div id="chart-scatter" class="plotly-chart"></div>
+    </div>
+  </main>
+
+  <footer>
+    <span>
+      데이터:
+      <a href="https://fiscaldata.treasury.gov" target="_blank">US Treasury Fiscal Data</a>
+      &amp;
+      <a href="https://finance.yahoo.com" target="_blank">Yahoo Finance</a>
+    </span>
+    <span>
+      소스 코드:
+      <a href="https://github.com/SangbumChoi/finance" target="_blank">github.com/SangbumChoi/finance</a>
+    </span>
+  </footer>
+
+</div><!-- /#app -->
+
+<script>
+// ─────────────────────────────────────────────
+// 공통 Plotly 설정
+// ─────────────────────────────────────────────
+const BG      = '#0d1117';
+const SURFACE = '#161b22';
+const GOLD    = '#FFD700';
+const GREEN   = '#00E676';
+const BLUE    = '#40C4FF';
+const RED     = '#FF5252';
+const GRAY    = '#90A4AE';
+
+const baseLayout = {
+  paper_bgcolor: SURFACE,
+  plot_bgcolor:  BG,
+  font: { color: GRAY, family: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', size: 12 },
+  margin: { l: 60, r: 60, t: 16, b: 40 },
+  xaxis: {
+    gridcolor: '#1e2933', showgrid: true,
+    linecolor: '#263238', tickcolor: GRAY,
+    rangeslider: { visible: false },
+  },
+  yaxis: { gridcolor: '#1e2933', showgrid: true, linecolor: '#263238', tickcolor: GRAY },
+  legend: {
+    bgcolor: '#1a1a2e88', bordercolor: '#21262d',
+    borderwidth: 1, font: { color: '#e6edf3' },
+  },
+  hovermode: 'x unified',
+  hoverlabel: { bgcolor: '#1a1a2e', bordercolor: '#21262d', font: { color: '#e6edf3' } },
+};
+
+const config = { responsive: true, displayModeBar: true, displaylogo: false,
+  modeBarButtonsToRemove: ['lasso2d', 'select2d'] };
+
+// ─────────────────────────────────────────────
+// 상태
+// ─────────────────────────────────────────────
+let RAW = null;   // 전체 데이터
+let rangeFrom = null;
+let rangeTo   = null;
+
+// ─────────────────────────────────────────────
+// 헬퍼
+// ─────────────────────────────────────────────
+function fmt(n, decimals = 0) {
+  if (n == null) return '—';
+  return n.toLocaleString('ko-KR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function pearsonR(xs, ys) {
+  const n = xs.length;
+  if (n < 2) return NaN;
+  const mx = xs.reduce((a, b) => a + b, 0) / n;
+  const my = ys.reduce((a, b) => a + b, 0) / n;
+  let num = 0, dx2 = 0, dy2 = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = xs[i] - mx, dy = ys[i] - my;
+    num += dx * dy; dx2 += dx * dx; dy2 += dy * dy;
+  }
+  return num / Math.sqrt(dx2 * dy2);
+}
+
+// 현재 rangeFrom/rangeTo 기준 인덱스 범위 반환
+function sliceByRange() {
+  const dates = RAW.dates;
+  let i0 = 0, i1 = dates.length - 1;
+  if (rangeFrom) { while (i0 < dates.length && dates[i0] < rangeFrom) i0++; }
+  if (rangeTo)   { while (i1 > 0           && dates[i1] > rangeTo)   i1--; }
+  return [i0, i1];
+}
+
+function getSlice() {
+  const [i0, i1] = sliceByRange();
+  return {
+    dates:        RAW.dates.slice(i0, i1 + 1),
+    tga:          RAW.tga.slice(i0, i1 + 1),
+    sp500:        RAW.sp500.slice(i0, i1 + 1),
+    rolling_corr: RAW.rolling_corr.slice(i0, i1 + 1),
+  };
+}
+
+// ─────────────────────────────────────────────
+// 차트 1 — 이중 축 시계열
+// ─────────────────────────────────────────────
+function drawMain(slice) {
+  const traces = [
+    {
+      x: slice.dates, y: slice.sp500,
+      name: 'S&P 500', type: 'scatter', mode: 'lines',
+      line: { color: GREEN, width: 1.8 },
+      yaxis: 'y',
+      hovertemplate: '<b>S&P 500</b>: %{y:,.0f}<extra></extra>',
+    },
+    {
+      x: slice.dates, y: slice.tga,
+      name: 'TGA 잔고 (B$)', type: 'scatter', mode: 'lines',
+      line: { color: GOLD, width: 1.5 },
+      fill: 'tozeroy', fillcolor: GOLD + '22',
+      yaxis: 'y2',
+      hovertemplate: '<b>TGA</b>: $%{y:,.1f}B<extra></extra>',
+    },
+  ];
+
+  const layout = {
+    ...baseLayout,
+    margin: { l: 70, r: 70, t: 16, b: 40 },
+    height: 380,
+    yaxis: {
+      ...baseLayout.yaxis,
+      title: { text: 'S&P 500', font: { color: GREEN } },
+      tickformat: ',.0f', tickfont: { color: GREEN },
+    },
+    yaxis2: {
+      gridcolor: '#1e2933', showgrid: false, linecolor: '#263238',
+      title: { text: 'TGA 잔고 (B$)', font: { color: GOLD } },
+      tickformat: '$,.0f', tickfont: { color: GOLD },
+      overlaying: 'y', side: 'right',
+    },
+    xaxis: {
+      ...baseLayout.xaxis,
+      rangeslider: { visible: true, bgcolor: '#1e2933', bordercolor: '#21262d', thickness: 0.06 },
+      rangeselector: {
+        bgcolor: SURFACE, bordercolor: '#21262d', borderwidth: 1,
+        font: { color: GRAY },
+        buttons: [
+          { count: 3,  step: 'month', stepmode: 'backward', label: '3M' },
+          { count: 6,  step: 'month', stepmode: 'backward', label: '6M' },
+          { count: 1,  step: 'year',  stepmode: 'backward', label: '1Y' },
+          { count: 2,  step: 'year',  stepmode: 'backward', label: '2Y' },
+          { step: 'all', label: '전체' },
+        ],
+      },
+    },
+  };
+
+  Plotly.react('chart-main', traces, layout, config);
+
+  // rangeslider 변경 → 다른 차트 동기화
+  document.getElementById('chart-main').on('plotly_relayout', (e) => {
+    const from = e['xaxis.range[0]'] || (e['xaxis.range'] && e['xaxis.range'][0]);
+    const to   = e['xaxis.range[1]'] || (e['xaxis.range'] && e['xaxis.range'][1]);
+    if (from && to) {
+      rangeFrom = from.substring(0, 10);
+      rangeTo   = to.substring(0, 10);
+      document.getElementById('date-from').value = rangeFrom;
+      document.getElementById('date-to').value   = rangeTo;
+      syncCharts();
+    }
+    if (e['xaxis.autorange']) {
+      rangeFrom = RAW.dates[0];
+      rangeTo   = RAW.dates[RAW.dates.length - 1];
+      document.getElementById('date-from').value = rangeFrom;
+      document.getElementById('date-to').value   = rangeTo;
+      syncCharts();
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// 차트 2 — 롤링 상관계수
+// ─────────────────────────────────────────────
+function drawCorr(slice) {
+  const colors = slice.rolling_corr.map(v => (v == null ? GRAY : v >= 0 ? GREEN : RED));
+
+  const traces = [
+    {
+      x: slice.dates, y: slice.rolling_corr,
+      name: '6개월 롤링 r', type: 'bar',
+      marker: { color: colors, opacity: 0.75 },
+      hovertemplate: '<b>롤링 r</b>: %{y:.3f}<extra></extra>',
+    },
+    {
+      x: [slice.dates[0], slice.dates[slice.dates.length - 1]],
+      y: [RAW.corr, RAW.corr],
+      name: `전체 r = ${RAW.corr}`,
+      type: 'scatter', mode: 'lines',
+      line: { color: BLUE, width: 1.5, dash: 'dash' },
+      hoverinfo: 'skip',
+    },
+    {
+      x: [slice.dates[0], slice.dates[slice.dates.length - 1]],
+      y: [0, 0],
+      name: '', showlegend: false,
+      type: 'scatter', mode: 'lines',
+      line: { color: GRAY, width: 0.8 },
+      hoverinfo: 'skip',
+    },
+  ];
+
+  const layout = {
+    ...baseLayout,
+    height: 240,
+    bargap: 0.1,
+    yaxis: {
+      ...baseLayout.yaxis,
+      range: [-1.05, 1.05],
+      tickformat: '.2f',
+      title: { text: 'Pearson r', font: { color: GRAY } },
+      zeroline: false,
+    },
+    xaxis: { ...baseLayout.xaxis,
+      range: [rangeFrom || RAW.dates[0], rangeTo || RAW.dates[RAW.dates.length - 1]] },
+  };
+
+  Plotly.react('chart-corr', traces, layout, config);
+}
+
+// ─────────────────────────────────────────────
+// 차트 3 — 산점도 (구간 반응)
+// ─────────────────────────────────────────────
+function drawScatter(slice) {
+  // 연도별 색상
+  const years = [...new Set(slice.dates.map(d => d.substring(0, 4)))].sort();
+  const palette = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#845EC2','#FF9671','#00C9A7'];
+  const yearColor = {};
+  years.forEach((y, i) => yearColor[y] = palette[i % palette.length]);
+
+  const byYear = {};
+  slice.dates.forEach((d, i) => {
+    const y = d.substring(0, 4);
+    if (!byYear[y]) byYear[y] = { x: [], y: [] };
+    if (slice.tga[i] != null && slice.sp500[i] != null) {
+      byYear[y].x.push(slice.tga[i]);
+      byYear[y].y.push(slice.sp500[i]);
+    }
+  });
+
+  // 선택 구간 상관계수 계산
+  const allX = [], allY = [];
+  Object.values(byYear).forEach(g => { allX.push(...g.x); allY.push(...g.y); });
+  const r = pearsonR(allX, allY);
+  document.getElementById('stat-range-corr').textContent = isNaN(r) ? '—' : r.toFixed(3);
+
+  // 추세선
+  const n = allX.length;
+  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+  for (let i = 0; i < n; i++) {
+    sumX += allX[i]; sumY += allY[i];
+    sumXY += allX[i] * allY[i]; sumX2 += allX[i] * allX[i];
+  }
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  const xMin = Math.min(...allX), xMax = Math.max(...allX);
+  const trendX = [xMin, xMax];
+  const trendY = trendX.map(x => slope * x + intercept);
+
+  const traces = Object.entries(byYear).map(([y, g]) => ({
+    x: g.x, y: g.y,
+    name: y, type: 'scatter', mode: 'markers',
+    marker: { color: yearColor[y], size: 5, opacity: 0.65 },
+    hovertemplate: `<b>${y}</b><br>TGA: $%{x:,.1f}B<br>S&P: %{y:,.0f}<extra></extra>`,
+  }));
+
+  traces.push({
+    x: trendX, y: trendY,
+    name: `추세선 r=${isNaN(r) ? '—' : r.toFixed(3)}`,
+    type: 'scatter', mode: 'lines',
+    line: { color: BLUE, width: 2, dash: 'dash' },
+    hoverinfo: 'skip',
+  });
+
+  const layout = {
+    ...baseLayout,
+    height: 320,
+    xaxis: {
+      ...baseLayout.xaxis,
+      rangeslider: { visible: false },
+      title: { text: 'TGA 잔고 (B$)', font: { color: GRAY } },
+      tickprefix: '$', ticksuffix: 'B',
+    },
+    yaxis: {
+      ...baseLayout.yaxis,
+      title: { text: 'S&P 500', font: { color: GRAY } },
+      tickformat: ',.0f',
+    },
+  };
+
+  Plotly.react('chart-scatter', traces, layout, config);
+}
+
+// ─────────────────────────────────────────────
+// 통계 카드 업데이트
+// ─────────────────────────────────────────────
+function updateStats() {
+  const last = RAW.dates.length - 1;
+  document.getElementById('stat-tga').textContent   = `$${fmt(RAW.tga[last], 1)}B`;
+  document.getElementById('stat-sp500').textContent = fmt(RAW.sp500[last], 0);
+  document.getElementById('stat-corr').textContent  = RAW.corr;
+  document.getElementById('stat-pval').textContent  = `p ${RAW.pval < 0.001 ? '< 0.001' : '= ' + RAW.pval}`;
+  document.getElementById('stat-start').textContent = RAW.dates[0];
+  document.getElementById('updated-date').textContent = RAW.updated;
+}
+
+// ─────────────────────────────────────────────
+// 동기화 (구간 변경 시 corr + scatter 재렌더)
+// ─────────────────────────────────────────────
+function syncCharts() {
+  const slice = getSlice();
+  drawCorr(slice);
+  drawScatter(slice);
+}
+
+// ─────────────────────────────────────────────
+// 범위 버튼
+// ─────────────────────────────────────────────
+function applyMonths(months) {
+  const lastDate = new Date(RAW.dates[RAW.dates.length - 1]);
+  if (months === 0) {
+    rangeFrom = RAW.dates[0];
+    rangeTo   = RAW.dates[RAW.dates.length - 1];
+  } else {
+    const from = new Date(lastDate);
+    from.setMonth(from.getMonth() - months);
+    rangeFrom = from.toISOString().substring(0, 10);
+    rangeTo   = RAW.dates[RAW.dates.length - 1];
+  }
+  document.getElementById('date-from').value = rangeFrom;
+  document.getElementById('date-to').value   = rangeTo;
+
+  Plotly.relayout('chart-main', { 'xaxis.range': [rangeFrom, rangeTo] });
+  syncCharts();
+}
+
+document.getElementById('range-btns').addEventListener('click', (e) => {
+  const btn = e.target.closest('.rng-btn');
+  if (!btn) return;
+  document.querySelectorAll('.rng-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyMonths(Number(btn.dataset.months));
+});
+
+document.getElementById('apply-range').addEventListener('click', () => {
+  rangeFrom = document.getElementById('date-from').value;
+  rangeTo   = document.getElementById('date-to').value;
+  if (!rangeFrom || !rangeTo) return;
+  document.querySelectorAll('.rng-btn').forEach(b => b.classList.remove('active'));
+  Plotly.relayout('chart-main', { 'xaxis.range': [rangeFrom, rangeTo] });
+  syncCharts();
+});
+
+// ─────────────────────────────────────────────
+// 초기화
+// ─────────────────────────────────────────────
+async function init() {
+  const res = await fetch('data.json');
+  RAW = await res.json();
+
+  rangeFrom = RAW.dates[0];
+  rangeTo   = RAW.dates[RAW.dates.length - 1];
+  document.getElementById('date-from').value = rangeFrom;
+  document.getElementById('date-to').value   = rangeTo;
+
+  updateStats();
+
+  const slice = getSlice();
+  drawMain(slice);
+  drawCorr(slice);
+  drawScatter(slice);
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+init().catch(err => {
+  document.getElementById('loading').innerHTML =
+    `<span style="color:var(--red)">데이터 로드 실패: ${err.message}</span>`;
+});
+</script>
 </body>
 </html>
