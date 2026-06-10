@@ -34,6 +34,9 @@ jobs:
       - name: Set Matplotlib backend (headless)
         run: echo "MPLBACKEND=Agg" >> $GITHUB_ENV
 
+      - name: Generate Market Overview JSON
+        run: python functions/market_overview.py
+
       - name: Generate TGA chart + JSON
         run: python functions/tga_sp500_chart.py
 
@@ -43,7 +46,7 @@ jobs:
       - name: Generate US Total Debt chart + JSON
         run: python functions/us_debt_sp500_chart.py
 
-- name: Generate Vix chart + JSON
+      - name: Generate Vix chart + JSON
         run: python functions/vix_sp500_chart.py
 
       - name: Generate Yield10 chart + JSON
@@ -61,7 +64,19 @@ jobs:
       - name: Generate Copper chart + JSON
         run: python functions/copper_sp500_chart.py
 
-            # ##CHART_STEPS## add_chart.py가 여기 위에 step을 삽입
+      - name: Generate Gold vs DXY chart + JSON
+        run: python functions/gold_dxy_chart.py
+
+      - name: Generate BTC vs QQQ chart + JSON
+        run: python functions/btc_qqq_chart.py
+
+      - name: Generate WTI vs CPI chart + JSON
+        run: python functions/wti_cpi_chart.py
+
+      - name: Generate Unemployment vs Fed chart + JSON
+        run: python functions/unrate_fed_chart.py
+
+      # ##CHART_STEPS## add_chart.py가 여기 위에 step을 삽입
 
       - name: Commit and push updated chart
         run: |

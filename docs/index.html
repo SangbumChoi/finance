@@ -445,6 +445,55 @@
       .quiz-answers { flex-direction: column; }
       .quiz-question { font-size: 1.05rem; }
     }
+
+    /* ── Market Overview ── */
+    .ov-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+    }
+    .kpi-card .label { font-size: 0.69rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .kpi-card .value { font-size: 1.25rem; font-weight: 700; color: #e6edf3; margin-top: 0.25rem; }
+    .kpi-ticker { text-transform: none; opacity: .65; font-weight: 400; }
+    .kpi-chg { font-size: 0.78rem; font-weight: 600; margin-top: 0.2rem; }
+    .kpi-chg.up   { color: var(--green); }
+    .kpi-chg.down { color: var(--red); }
+    .kpi-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.15rem; }
+    .ov-grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 1100px) { .ov-grid2 { grid-template-columns: 1fr; } }
+    .ov-chart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.5rem 0.7rem 0;
+    }
+    .ov-section-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin: 1.2rem 0 0.6rem;
+    }
+    .ov-macro {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.8rem;
+    }
   </style>
 </head>
 <body>
@@ -461,9 +510,16 @@
       <span class="sidebar-brand" data-i18n="sidebarTitle">매크로 분석</span>
     </div>
 
+    <div class="nav-section" data-i18n="navSectionOverview">대시보드</div>
+
+    <button class="nav-item active" data-view="overview">
+      <span class="nav-icon">🇺🇸</span>
+      <span data-i18n="navOverview">마켓 오버뷰</span>
+    </button>
+
     <div class="nav-section" data-i18n="navSection">시장 지표</div>
 
-    <button class="nav-item active" data-view="tga">
+    <button class="nav-item" data-view="tga">
       <span class="nav-icon">🏦</span>
       <span data-i18n="navTga">TGA vs S&amp;P 500</span>
     </button>
@@ -636,6 +692,40 @@
       </div>
     </div>
 
+    <!-- ── 마켓 오버뷰 뷰 ── -->
+    <div id="overview-view" style="display:none; flex:1; padding:1rem 1.5rem 1.5rem; overflow-y:auto;">
+      <div class="ov-kpis" id="ov-kpis"></div>
+
+      <div class="chart-card">
+        <div class="ov-chart-head">
+          <div class="chart-title" data-i18n="ovSectorsTitle">섹터 퍼포먼스 — SPDR 11개 섹터 ETF</div>
+          <div class="btn-group" id="ov-horizon-btns">
+            <button class="rng-btn" data-h="d1">1D</button>
+            <button class="rng-btn" data-h="w1">1W</button>
+            <button class="rng-btn" data-h="m1">1M</button>
+            <button class="rng-btn" data-h="m3">3M</button>
+            <button class="rng-btn active" data-h="ytd">YTD</button>
+            <button class="rng-btn" data-h="y1">1Y</button>
+          </div>
+        </div>
+        <div id="ov-sectors"></div>
+      </div>
+
+      <div class="ov-grid2">
+        <div class="chart-card">
+          <div class="chart-title" data-i18n="ovIndicesTitle">주요 지수 — 1년 상대 성과 (시작=100)</div>
+          <div id="ov-indices"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title" data-i18n="ovSectorSeriesTitle">섹터 상대 성과 — 6개월 (시작=100)</div>
+          <div id="ov-sector-series"></div>
+        </div>
+      </div>
+
+      <div class="ov-section-label" data-i18n="ovMacroTitle">매크로 스냅샷</div>
+      <div class="ov-macro" id="ov-macro"></div>
+    </div>
+
     <!-- ── 퀴즈 뷰 ── -->
     <div id="quiz-view" style="display:none; flex:1; padding:1.5rem; overflow-y:auto;">
       <div class="quiz-wrap">
@@ -803,6 +893,16 @@ const T = {
     chartMainUnrateFed:'미국 실업률 & 기준금리 — 시계열',
     chartScatterUnrateFed:'기준금리 vs 실업률 — 산점도 (선택 구간)',
     unrateLabel:'실업률 (%)', fedUnrateLabel:'기준금리 (%)',
+    navSectionOverview:'대시보드', navOverview:'마켓 오버뷰',
+    viewTitleOverview:'미국 시장 오버뷰', viewSubOverview:'주요 지수 · 11개 섹터 · 매크로 지표 — 매 영업일 자동 업데이트',
+    ovSectorsTitle:'섹터 퍼포먼스 — SPDR 11개 섹터 ETF',
+    ovIndicesTitle:'주요 지수 — 1년 상대 성과 (시작=100)',
+    ovSectorSeriesTitle:'섹터 상대 성과 — 6개월 (시작=100)',
+    ovMacroTitle:'매크로 스냅샷', ovPrev:'이전',
+    ovIdxSp500:'S&P 500', ovIdxNasdaq:'나스닥 종합', ovIdxDow:'다우존스', ovIdxRussell:'러셀 2000', ovIdxVix:'VIX',
+    ovMacroCpi:'CPI 인플레이션 (YoY)', ovMacroFed:'기준금리', ovMacroY10:'10년물 국채금리', ovMacroUnrate:'실업률',
+    secXLK:'기술', secXLF:'금융', secXLV:'헬스케어', secXLY:'임의소비재', secXLP:'필수소비재',
+    secXLE:'에너지', secXLI:'산업재', secXLB:'소재', secXLU:'유틸리티', secXLRE:'부동산', secXLC:'커뮤니케이션',
     // ##CHART_TRANS_KO##
   },
   en: {
@@ -893,6 +993,16 @@ const T = {
     chartMainUnrateFed:'US Unemployment Rate & Fed Rate — Time Series',
     chartScatterUnrateFed:'Fed Rate vs Unemployment — Scatter (selected range)',
     unrateLabel:'Unemployment Rate (%)', fedUnrateLabel:'Fed Funds Rate (%)',
+    navSectionOverview:'Dashboard', navOverview:'Market Overview',
+    viewTitleOverview:'US Market Overview', viewSubOverview:'Major indices · 11 sectors · macro indicators — auto-updated every business day',
+    ovSectorsTitle:'Sector Performance — SPDR 11 Sector ETFs',
+    ovIndicesTitle:'Major Indices — 1Y Relative Performance (start=100)',
+    ovSectorSeriesTitle:'Sector Relative Performance — 6M (start=100)',
+    ovMacroTitle:'Macro Snapshot', ovPrev:'prev',
+    ovIdxSp500:'S&P 500', ovIdxNasdaq:'Nasdaq Composite', ovIdxDow:'Dow Jones', ovIdxRussell:'Russell 2000', ovIdxVix:'VIX',
+    ovMacroCpi:'CPI Inflation (YoY)', ovMacroFed:'Fed Funds Rate', ovMacroY10:'10Y Treasury Yield', ovMacroUnrate:'Unemployment Rate',
+    secXLK:'Technology', secXLF:'Financials', secXLV:'Health Care', secXLY:'Consumer Disc.', secXLP:'Consumer Staples',
+    secXLE:'Energy', secXLI:'Industrials', secXLB:'Materials', secXLU:'Utilities', secXLRE:'Real Estate', secXLC:'Communication',
     // ##CHART_TRANS_EN##
   },
   zh: {
@@ -983,6 +1093,16 @@ const T = {
     chartMainUnrateFed:'美国失业率 & 基准利率 — 时间序列',
     chartScatterUnrateFed:'基准利率 vs 失业率 — 散点图 (选定区间)',
     unrateLabel:'失业率 (%)', fedUnrateLabel:'基准利率 (%)',
+    navSectionOverview:'仪表盘', navOverview:'市场总览',
+    viewTitleOverview:'美国市场总览', viewSubOverview:'主要指数 · 11个行业 · 宏观指标 — 每个交易日自动更新',
+    ovSectorsTitle:'行业表现 — SPDR 11个行业ETF',
+    ovIndicesTitle:'主要指数 — 1年相对表现 (起点=100)',
+    ovSectorSeriesTitle:'行业相对表现 — 6个月 (起点=100)',
+    ovMacroTitle:'宏观快照', ovPrev:'前值',
+    ovIdxSp500:'标普500', ovIdxNasdaq:'纳斯达克综合', ovIdxDow:'道琼斯', ovIdxRussell:'罗素2000', ovIdxVix:'VIX',
+    ovMacroCpi:'CPI通胀率 (同比)', ovMacroFed:'联邦基准利率', ovMacroY10:'10年期国债收益率', ovMacroUnrate:'失业率',
+    secXLK:'信息技术', secXLF:'金融', secXLV:'医疗保健', secXLY:'非必需消费品', secXLP:'必需消费品',
+    secXLE:'能源', secXLI:'工业', secXLB:'原材料', secXLU:'公用事业', secXLRE:'房地产', secXLC:'通信服务',
     // ##CHART_TRANS_ZH##
   },
   ja: {
@@ -1073,6 +1193,16 @@ const T = {
     chartMainUnrateFed:'米国失業率 & 政策金利 — 時系列',
     chartScatterUnrateFed:'政策金利 vs 失業率 — 散布図 (選択期間)',
     unrateLabel:'失業率 (%)', fedUnrateLabel:'政策金利 (%)',
+    navSectionOverview:'ダッシュボード', navOverview:'マーケット概況',
+    viewTitleOverview:'米国市場概況', viewSubOverview:'主要指数 · 11セクター · マクロ指標 — 毎営業日自動更新',
+    ovSectorsTitle:'セクターパフォーマンス — SPDR 11セクターETF',
+    ovIndicesTitle:'主要指数 — 1年相対パフォーマンス (開始=100)',
+    ovSectorSeriesTitle:'セクター相対パフォーマンス — 6ヶ月 (開始=100)',
+    ovMacroTitle:'マクロスナップショット', ovPrev:'前回',
+    ovIdxSp500:'S&P 500', ovIdxNasdaq:'ナスダック総合', ovIdxDow:'ダウ平均', ovIdxRussell:'ラッセル2000', ovIdxVix:'VIX',
+    ovMacroCpi:'CPIインフレ率 (前年比)', ovMacroFed:'政策金利', ovMacroY10:'10年国債利回り', ovMacroUnrate:'失業率',
+    secXLK:'テクノロジー', secXLF:'金融', secXLV:'ヘルスケア', secXLY:'一般消費財', secXLP:'生活必需品',
+    secXLE:'エネルギー', secXLI:'資本財', secXLB:'素材', secXLU:'公益事業', secXLRE:'不動産', secXLC:'通信',
     // ##CHART_TRANS_JA##
   },
 };
@@ -1651,6 +1781,8 @@ function initChartListeners() {
   });
 }
 
+let _chartListenersInit = false;
+
 function renderAll() {
   const slice = getSlice();
   updateStats();
@@ -1658,6 +1790,11 @@ function renderAll() {
   drawMain(slice);
   drawCorr(slice);
   drawScatter(slice);
+  // 첫 차트 생성 이후에만 plotly_relayout 리스너 등록 가능
+  if (!_chartListenersInit) {
+    _chartListenersInit = true;
+    initChartListeners();
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1665,24 +1802,35 @@ function renderAll() {
 // ═══════════════════════════════════════════
 const chartSections = ['range-bar', 'stats-row', 'charts-wrap'];
 
-function showChartUI(visible) {
-  document.querySelector('.range-bar').style.display  = visible ? '' : 'none';
-  document.querySelector('.stats-row').style.display  = visible ? '' : 'none';
-  document.querySelector('.charts').style.display     = visible ? '' : 'none';
-  document.getElementById('quiz-view').style.display  = visible ? 'none' : 'flex';
+function showChartUI(kind) {
+  const charts = kind === 'charts';
+  document.querySelector('.range-bar').style.display      = charts ? '' : 'none';
+  document.querySelector('.stats-row').style.display      = charts ? '' : 'none';
+  document.querySelector('.charts').style.display         = charts ? '' : 'none';
+  document.getElementById('quiz-view').style.display      = kind === 'quiz' ? 'flex' : 'none';
+  document.getElementById('overview-view').style.display  = kind === 'overview' ? 'block' : 'none';
 }
 
 async function switchView(viewId) {
-  if (viewId === currentView && (RAW || viewId === 'quiz')) return;
+  if (viewId === currentView && (RAW || viewId === 'quiz' || viewId === 'overview')) return;
   currentView = viewId;
 
   document.querySelectorAll('.nav-item').forEach(b => {
     b.classList.toggle('active', b.dataset.view === viewId);
   });
 
+  // ── 마켓 오버뷰 뷰 ──
+  if (viewId === 'overview') {
+    showChartUI('overview');
+    document.getElementById('view-title').textContent = t('viewTitleOverview');
+    document.getElementById('view-sub').textContent   = t('viewSubOverview');
+    await loadOverview();
+    return;
+  }
+
   // ── 퀴즈 뷰 ──
   if (viewId === 'quiz') {
-    showChartUI(false);
+    showChartUI('quiz');
     document.getElementById('view-title').textContent = t('viewTitleQuiz');
     document.getElementById('view-sub').textContent   = t('viewSubQuiz');
     quizInit();
@@ -1690,7 +1838,7 @@ async function switchView(viewId) {
   }
 
   // ── 차트 뷰로 복귀 ──
-  showChartUI(true);
+  showChartUI('charts');
 
   // 캐시에 있으면 바로 렌더
   if (cache[viewId]) {
@@ -1795,8 +1943,13 @@ function toggleSidebar() {
     mainEl.style.marginLeft = sidebarOpen
       ? 'var(--sidebar-w)'
       : '0';
-    // resize charts after transition
-    setTimeout(()=>{ Plotly.Plots.resize('chart-main'); Plotly.Plots.resize('chart-corr'); Plotly.Plots.resize('chart-scatter'); }, 280);
+    // resize charts after transition (생성된 차트만)
+    setTimeout(()=>{
+      ['chart-main','chart-corr','chart-scatter','ov-sectors','ov-indices','ov-sector-series'].forEach(id=>{
+        const el = document.getElementById(id);
+        if (el && el.data) { try { Plotly.Plots.resize(id); } catch(_) {} }
+      });
+    }, 280);
   }
 }
 
@@ -1826,6 +1979,10 @@ document.querySelectorAll('.lang-btn').forEach(btn=>{
     if (currentView === 'quiz') {
       document.getElementById('view-title').textContent = t('viewTitleQuiz');
       document.getElementById('view-sub').textContent   = t('viewSubQuiz');
+    } else if (currentView === 'overview') {
+      document.getElementById('view-title').textContent = t('viewTitleOverview');
+      document.getElementById('view-sub').textContent   = t('viewSubOverview');
+      if (OV) renderOverview();
     } else {
       updateViewText();
       if (RAW) renderAll();
@@ -1834,13 +1991,128 @@ document.querySelectorAll('.lang-btn').forEach(btn=>{
 });
 
 // ═══════════════════════════════════════════
+// 마켓 오버뷰 (지수 KPI · 섹터 퍼포먼스 · 매크로)
+// ═══════════════════════════════════════════
+let OV = null;           // market_overview_data.json 캐시
+let ovHorizon = 'ytd';   // 섹터 수익률 기간
+
+const OV_IDX_COLORS  = { sp500: GREEN, nasdaq: BLUE, dow: GOLD, russell: ORANGE };
+const OV_MACRO_KEYS  = { cpi_yoy:'ovMacroCpi', fed_funds:'ovMacroFed', yield10:'ovMacroY10', unrate:'ovMacroUnrate' };
+const OV_MACRO_ICONS = { cpi_yoy:'🔥', fed_funds:'🏛️', yield10:'📉', unrate:'👷' };
+const OV_SECTOR_PAL  = ['#40C4FF','#00E676','#FFD700','#FF9800','#E91E63','#9C27B0','#26A69A','#7E57C2','#8D6E63','#78909C','#FF5252'];
+
+function ovIdxLabel(k) { return t('ovIdx' + k.charAt(0).toUpperCase() + k.slice(1)); }
+function fmtChg(v) { return v == null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`; }
+
+async function loadOverview() {
+  if (OV) { renderOverview(); return; }
+  const kpis = document.getElementById('ov-kpis');
+  kpis.innerHTML = `<div class="kpi-card"><div class="label">${t('loadingText')}</div></div>`;
+  try {
+    const res = await fetch('market_overview_data.json?_=' + Date.now());
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText} — market_overview_data.json`);
+    OV = await res.json();
+    renderOverview();
+  } catch (err) {
+    kpis.innerHTML = `<div class="kpi-card"><div class="label" style="color:var(--red)">⚠️ ${err.message}</div></div>`;
+  }
+}
+
+function renderOverview() {
+  if (!OV) return;
+  renderOvKpis();
+  renderOvSectors();
+  renderOvIndices();
+  renderOvSectorSeries();
+  renderOvMacro();
+}
+
+function renderOvKpis() {
+  const el = document.getElementById('ov-kpis');
+  el.innerHTML = OV.indices.map(ix => {
+    const d1 = ix.chg.d1, up = d1 != null && d1 >= 0;
+    return `<div class="kpi-card">
+      <div class="label">${ovIdxLabel(ix.key)} <span class="kpi-ticker">${ix.ticker}</span></div>
+      <div class="value">${ix.last.toLocaleString('en-US', {maximumFractionDigits: 2})}</div>
+      <div class="kpi-chg ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${fmtChg(d1)} · 1D</div>
+      <div class="kpi-sub">YTD ${fmtChg(ix.chg.ytd)} · 1Y ${fmtChg(ix.chg.y1)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderOvSectors() {
+  const rows = OV.sectors
+    .map(s => ({ label: `${t('sec' + s.key)} (${s.key})`, v: s.chg[ovHorizon] }))
+    .filter(r => r.v != null)
+    .sort((a, b) => a.v - b.v);
+  Plotly.react('ov-sectors', [{
+    x: rows.map(r => r.v), y: rows.map(r => r.label),
+    type: 'bar', orientation: 'h',
+    marker: { color: rows.map(r => r.v >= 0 ? GREEN : RED), opacity: 0.85 },
+    text: rows.map(r => fmtChg(r.v)), textposition: 'auto',
+    hovertemplate: '<b>%{y}</b>: %{x:+.2f}%<extra></extra>',
+  }], {
+    ...baseLayout, height: 420, margin: { l: 10, r: 30, t: 10, b: 36 },
+    xaxis: { ...baseLayout.xaxis, ticksuffix: '%', zeroline: true, zerolinecolor: '#3a4654' },
+    yaxis: { ...baseLayout.yaxis, automargin: true },
+    hovermode: 'closest',
+  }, cfg);
+}
+
+function renderOvIndices() {
+  const s = OV.series;
+  const traces = Object.keys(OV_IDX_COLORS).filter(k => s[k]).map(k => ({
+    x: s.dates, y: s[k], name: ovIdxLabel(k), type: 'scatter', mode: 'lines',
+    line: { color: OV_IDX_COLORS[k], width: 1.6 },
+    hovertemplate: `<b>${ovIdxLabel(k)}</b>: %{y:.1f}<extra></extra>`,
+  }));
+  Plotly.react('ov-indices', traces, {
+    ...baseLayout, height: 320, margin: { l: 48, r: 20, t: 28, b: 36 },
+    legend: { ...baseLayout.legend, orientation: 'h', y: 1.14, x: 0 },
+  }, cfg);
+}
+
+function renderOvSectorSeries() {
+  const s = OV.sector_series;
+  const traces = OV.sectors.filter(sec => s[sec.key]).map((sec, i) => ({
+    x: s.dates, y: s[sec.key], name: t('sec' + sec.key), type: 'scatter', mode: 'lines',
+    line: { color: OV_SECTOR_PAL[i % OV_SECTOR_PAL.length], width: 1.2 },
+    hovertemplate: `<b>${t('sec' + sec.key)}</b>: %{y:.1f}<extra></extra>`,
+  }));
+  Plotly.react('ov-sector-series', traces, {
+    ...baseLayout, height: 320, margin: { l: 48, r: 20, t: 28, b: 36 },
+    legend: { ...baseLayout.legend, orientation: 'h', y: 1.22, x: 0, font: { size: 9, color: '#e6edf3' } },
+  }, cfg);
+}
+
+function renderOvMacro() {
+  const el = document.getElementById('ov-macro');
+  el.innerHTML = OV.macro.map(m => {
+    const delta = m.prev != null ? m.value - m.prev : null;
+    const arrow = delta == null ? '' : delta > 0 ? '▲' : delta < 0 ? '▼' : '＝';
+    return `<div class="kpi-card">
+      <div class="label">${OV_MACRO_ICONS[m.key] ?? ''} ${t(OV_MACRO_KEYS[m.key] ?? m.key)}</div>
+      <div class="value">${m.value.toFixed(2)}%</div>
+      <div class="kpi-sub">${arrow} ${t('ovPrev')} ${m.prev != null ? m.prev.toFixed(2) + '%' : '—'} · ${m.date}</div>
+      <div class="kpi-sub">FRED · ${m.series}</div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('ov-horizon-btns').addEventListener('click', e => {
+  const btn = e.target.closest('.rng-btn'); if (!btn) return;
+  ovHorizon = btn.dataset.h;
+  document.querySelectorAll('#ov-horizon-btns .rng-btn').forEach(b => b.classList.toggle('active', b === btn));
+  if (OV) renderOvSectors();
+});
+
+// ═══════════════════════════════════════════
 // 초기화
 // ═══════════════════════════════════════════
 async function init() {
   applyTranslations();
   try {
-    await switchView('tga');
-    initChartListeners();   // 리스너 딱 한 번만 등록
+    await switchView('overview');
   } finally {
     document.getElementById('loading').style.display = 'none';  // 성공/실패 모두 숨김
   }
