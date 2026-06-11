@@ -2,6 +2,7 @@
 """
 market_overview.py — 미국 시장 대시보드 데이터 생성
 - 주요 지수   : S&P 500, 나스닥, 다우, 러셀 2000, VIX (yfinance, 일별)
+- 글로벌 지수 : 코스피, 항셍, 닛케이, 유로스톡스50, DAX, FTSE (yfinance, 일별)
 - 섹터 ETF   : SPDR 11개 섹터 (XLK, XLF, XLE, ...) 기간별 수익률
 - 매크로 지표 : CPI YoY, 기준금리, 10년물 금리, 실업률 (FRED CSV)
 - 출력: docs/market_overview_data.json
@@ -23,6 +24,16 @@ INDICES = {
     "dow": "^DJI",
     "russell": "^RUT",
     "vix": "^VIX",
+}
+
+# 글로벌 시장 (현지 통화 기준)
+GLOBAL_INDICES = {
+    "kospi": "^KS11",  # 한국
+    "hsi": "^HSI",  # 홍콩
+    "nikkei": "^N225",  # 일본
+    "stoxx": "^STOXX50E",  # 유로존
+    "dax": "^GDAXI",  # 독일
+    "ftse": "^FTSE",  # 영국
 }
 
 SECTORS = {
@@ -121,7 +132,7 @@ def main() -> None:
         )
 
     print("[overview] 지수 + 섹터 ETF 다운로드...")
-    tickers = list(INDICES.values()) + list(SECTORS.keys())
+    tickers = list(INDICES.values()) + list(GLOBAL_INDICES.values()) + list(SECTORS.keys())
     closes = fetch_closes(tickers)
 
     # ── 지수 카드 + 1Y 정규화 시계열 ──
@@ -149,6 +160,22 @@ def main() -> None:
     for key, norm in series.items():
         series_out[key] = to_list(norm.reindex(common).ffill())
 
+    # ── 글로벌 지수 카드 + 1Y 정규화 시계열 (미국 영업일 그리드에 정렬, S&P 500 기준선 포함) ──
+    global_indices = []
+    global_out = {"dates": series_out["dates"], "sp500": series_out["sp500"]}
+    for key, ticker in GLOBAL_INDICES.items():
+        s = closes[ticker].dropna()
+        global_indices.append(
+            {
+                "key": key,
+                "ticker": ticker,
+                "last": round(float(s.iloc[-1]), 2),
+                "chg": pct_changes(s),
+            }
+        )
+        aligned = s.reindex(common, method="ffill")
+        global_out[key] = to_list((aligned / aligned.iloc[0] * 100).round(2))
+
     # ── 섹터 수익률 + 6M 정규화 시계열 ──
     sectors = []
     sector_series: dict[str, list] = {}
@@ -169,6 +196,8 @@ def main() -> None:
         "updated": pd.Timestamp.today().strftime("%Y-%m-%d"),
         "indices": indices,
         "series": series_out,
+        "global_indices": global_indices,
+        "global_series": global_out,
         "sectors": sectors,
         "sector_series": sector_out,
         "macro": macro,

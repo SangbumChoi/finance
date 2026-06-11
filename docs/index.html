@@ -722,6 +722,13 @@
         </div>
       </div>
 
+      <div class="ov-section-label" data-i18n="ovGlobalTitle">글로벌 마켓</div>
+      <div class="ov-kpis" id="ov-global-kpis"></div>
+      <div class="chart-card">
+        <div class="chart-title" data-i18n="ovGlobalChartTitle">글로벌 지수 — 1년 상대 성과 (시작=100)</div>
+        <div id="ov-global"></div>
+      </div>
+
       <div class="ov-section-label" data-i18n="ovMacroTitle">매크로 스냅샷</div>
       <div class="ov-macro" id="ov-macro"></div>
     </div>
@@ -903,6 +910,9 @@ const T = {
     ovMacroCpi:'CPI 인플레이션 (YoY)', ovMacroFed:'기준금리', ovMacroY10:'10년물 국채금리', ovMacroUnrate:'실업률',
     secXLK:'기술', secXLF:'금융', secXLV:'헬스케어', secXLY:'임의소비재', secXLP:'필수소비재',
     secXLE:'에너지', secXLI:'산업재', secXLB:'소재', secXLU:'유틸리티', secXLRE:'부동산', secXLC:'커뮤니케이션',
+    ovGlobalTitle:'글로벌 마켓', ovGlobalChartTitle:'글로벌 지수 — 1년 상대 성과 (시작=100)',
+    ovIdxKospi:'코스피', ovIdxHsi:'항셍지수', ovIdxNikkei:'닛케이 225',
+    ovIdxStoxx:'유로스톡스 50', ovIdxDax:'독일 DAX', ovIdxFtse:'FTSE 100',
     // ##CHART_TRANS_KO##
   },
   en: {
@@ -1003,6 +1013,9 @@ const T = {
     ovMacroCpi:'CPI Inflation (YoY)', ovMacroFed:'Fed Funds Rate', ovMacroY10:'10Y Treasury Yield', ovMacroUnrate:'Unemployment Rate',
     secXLK:'Technology', secXLF:'Financials', secXLV:'Health Care', secXLY:'Consumer Disc.', secXLP:'Consumer Staples',
     secXLE:'Energy', secXLI:'Industrials', secXLB:'Materials', secXLU:'Utilities', secXLRE:'Real Estate', secXLC:'Communication',
+    ovGlobalTitle:'Global Markets', ovGlobalChartTitle:'Global Indices — 1Y Relative Performance (start=100)',
+    ovIdxKospi:'KOSPI', ovIdxHsi:'Hang Seng', ovIdxNikkei:'Nikkei 225',
+    ovIdxStoxx:'Euro Stoxx 50', ovIdxDax:'DAX', ovIdxFtse:'FTSE 100',
     // ##CHART_TRANS_EN##
   },
   zh: {
@@ -1103,6 +1116,9 @@ const T = {
     ovMacroCpi:'CPI通胀率 (同比)', ovMacroFed:'联邦基准利率', ovMacroY10:'10年期国债收益率', ovMacroUnrate:'失业率',
     secXLK:'信息技术', secXLF:'金融', secXLV:'医疗保健', secXLY:'非必需消费品', secXLP:'必需消费品',
     secXLE:'能源', secXLI:'工业', secXLB:'原材料', secXLU:'公用事业', secXLRE:'房地产', secXLC:'通信服务',
+    ovGlobalTitle:'全球市场', ovGlobalChartTitle:'全球指数 — 1年相对表现 (起点=100)',
+    ovIdxKospi:'韩国KOSPI', ovIdxHsi:'恒生指数', ovIdxNikkei:'日经225',
+    ovIdxStoxx:'欧洲斯托克50', ovIdxDax:'德国DAX', ovIdxFtse:'英国富时100',
     // ##CHART_TRANS_ZH##
   },
   ja: {
@@ -1203,6 +1219,9 @@ const T = {
     ovMacroCpi:'CPIインフレ率 (前年比)', ovMacroFed:'政策金利', ovMacroY10:'10年国債利回り', ovMacroUnrate:'失業率',
     secXLK:'テクノロジー', secXLF:'金融', secXLV:'ヘルスケア', secXLY:'一般消費財', secXLP:'生活必需品',
     secXLE:'エネルギー', secXLI:'資本財', secXLB:'素材', secXLU:'公益事業', secXLRE:'不動産', secXLC:'通信',
+    ovGlobalTitle:'グローバル市場', ovGlobalChartTitle:'グローバル指数 — 1年相対パフォーマンス (開始=100)',
+    ovIdxKospi:'韓国KOSPI', ovIdxHsi:'ハンセン指数', ovIdxNikkei:'日経225',
+    ovIdxStoxx:'ユーロ・ストックス50', ovIdxDax:'独DAX', ovIdxFtse:'英FTSE100',
     // ##CHART_TRANS_JA##
   },
 };
@@ -1945,7 +1964,7 @@ function toggleSidebar() {
       : '0';
     // resize charts after transition (생성된 차트만)
     setTimeout(()=>{
-      ['chart-main','chart-corr','chart-scatter','ov-sectors','ov-indices','ov-sector-series'].forEach(id=>{
+      ['chart-main','chart-corr','chart-scatter','ov-sectors','ov-indices','ov-sector-series','ov-global'].forEach(id=>{
         const el = document.getElementById(id);
         if (el && el.data) { try { Plotly.Plots.resize(id); } catch(_) {} }
       });
@@ -1997,6 +2016,8 @@ let OV = null;           // market_overview_data.json 캐시
 let ovHorizon = 'ytd';   // 섹터 수익률 기간
 
 const OV_IDX_COLORS  = { sp500: GREEN, nasdaq: BLUE, dow: GOLD, russell: ORANGE };
+const OV_GLOBAL_COLORS = { kospi:'#40C4FF', hsi:'#FF5252', nikkei:'#E91E63', stoxx:'#FFD700', dax:'#00E676', ftse:'#FF9800' };
+const OV_FLAGS = { sp500:'🇺🇸', nasdaq:'🇺🇸', dow:'🇺🇸', russell:'🇺🇸', vix:'', kospi:'🇰🇷', hsi:'🇭🇰', nikkei:'🇯🇵', stoxx:'🇪🇺', dax:'🇩🇪', ftse:'🇬🇧' };
 const OV_MACRO_KEYS  = { cpi_yoy:'ovMacroCpi', fed_funds:'ovMacroFed', yield10:'ovMacroY10', unrate:'ovMacroUnrate' };
 const OV_MACRO_ICONS = { cpi_yoy:'🔥', fed_funds:'🏛️', yield10:'📉', unrate:'👷' };
 const OV_SECTOR_PAL  = ['#40C4FF','#00E676','#FFD700','#FF9800','#E91E63','#9C27B0','#26A69A','#7E57C2','#8D6E63','#78909C','#FF5252'];
@@ -2024,20 +2045,49 @@ function renderOverview() {
   renderOvSectors();
   renderOvIndices();
   renderOvSectorSeries();
+  if (OV.global_indices) {       // 구버전 JSON 호환
+    renderOvGlobalKpis();
+    renderOvGlobal();
+  }
   renderOvMacro();
 }
 
+function kpiCardHTML(ix) {
+  const d1 = ix.chg.d1, up = d1 != null && d1 >= 0;
+  const flag = OV_FLAGS[ix.key] ?? '';
+  return `<div class="kpi-card">
+    <div class="label">${flag ? flag + ' ' : ''}${ovIdxLabel(ix.key)} <span class="kpi-ticker">${ix.ticker}</span></div>
+    <div class="value">${ix.last.toLocaleString('en-US', {maximumFractionDigits: 2})}</div>
+    <div class="kpi-chg ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${fmtChg(d1)} · 1D</div>
+    <div class="kpi-sub">YTD ${fmtChg(ix.chg.ytd)} · 1Y ${fmtChg(ix.chg.y1)}</div>
+  </div>`;
+}
+
 function renderOvKpis() {
-  const el = document.getElementById('ov-kpis');
-  el.innerHTML = OV.indices.map(ix => {
-    const d1 = ix.chg.d1, up = d1 != null && d1 >= 0;
-    return `<div class="kpi-card">
-      <div class="label">${ovIdxLabel(ix.key)} <span class="kpi-ticker">${ix.ticker}</span></div>
-      <div class="value">${ix.last.toLocaleString('en-US', {maximumFractionDigits: 2})}</div>
-      <div class="kpi-chg ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${fmtChg(d1)} · 1D</div>
-      <div class="kpi-sub">YTD ${fmtChg(ix.chg.ytd)} · 1Y ${fmtChg(ix.chg.y1)}</div>
-    </div>`;
-  }).join('');
+  document.getElementById('ov-kpis').innerHTML = OV.indices.map(kpiCardHTML).join('');
+}
+
+function renderOvGlobalKpis() {
+  document.getElementById('ov-global-kpis').innerHTML = OV.global_indices.map(kpiCardHTML).join('');
+}
+
+function renderOvGlobal() {
+  const s = OV.global_series;
+  const traces = [];
+  if (s.sp500) traces.push({
+    x: s.dates, y: s.sp500, name: ovIdxLabel('sp500'), type: 'scatter', mode: 'lines',
+    line: { color: GRAY, width: 1.2, dash: 'dot' },
+    hovertemplate: `<b>${ovIdxLabel('sp500')}</b>: %{y:.1f}<extra></extra>`,
+  });
+  Object.keys(OV_GLOBAL_COLORS).filter(k => s[k]).forEach(k => traces.push({
+    x: s.dates, y: s[k], name: ovIdxLabel(k), type: 'scatter', mode: 'lines',
+    line: { color: OV_GLOBAL_COLORS[k], width: 1.6 },
+    hovertemplate: `<b>${ovIdxLabel(k)}</b>: %{y:.1f}<extra></extra>`,
+  }));
+  Plotly.react('ov-global', traces, {
+    ...baseLayout, height: 340, margin: { l: 48, r: 20, t: 28, b: 36 },
+    legend: { ...baseLayout.legend, orientation: 'h', y: 1.16, x: 0 },
+  }, cfg);
 }
 
 function renderOvSectors() {
