@@ -725,7 +725,13 @@
       <div class="ov-section-label" data-i18n="ovGlobalTitle">글로벌 마켓</div>
       <div class="ov-kpis" id="ov-global-kpis"></div>
       <div class="chart-card">
-        <div class="chart-title" data-i18n="ovGlobalChartTitle">글로벌 지수 — 1년 상대 성과 (시작=100)</div>
+        <div class="ov-chart-head">
+          <div class="chart-title" data-i18n="ovGlobalChartTitle">글로벌 지수 — 1년 상대 성과 (시작=100)</div>
+          <div class="btn-group" id="ov-currency-btns">
+            <button class="rng-btn active" data-cur="usd" title="환율 반영">USD</button>
+            <button class="rng-btn" data-cur="local" data-i18n-inner="ovCurLocal">현지통화</button>
+          </div>
+        </div>
         <div id="ov-global"></div>
       </div>
 
@@ -913,6 +919,7 @@ const T = {
     ovGlobalTitle:'글로벌 마켓', ovGlobalChartTitle:'글로벌 지수 — 1년 상대 성과 (시작=100)',
     ovIdxKospi:'코스피', ovIdxHsi:'항셍지수', ovIdxNikkei:'닛케이 225',
     ovIdxStoxx:'유로스톡스 50', ovIdxDax:'독일 DAX', ovIdxFtse:'FTSE 100',
+    ovCurLocal:'현지통화',
     // ##CHART_TRANS_KO##
   },
   en: {
@@ -1016,6 +1023,7 @@ const T = {
     ovGlobalTitle:'Global Markets', ovGlobalChartTitle:'Global Indices — 1Y Relative Performance (start=100)',
     ovIdxKospi:'KOSPI', ovIdxHsi:'Hang Seng', ovIdxNikkei:'Nikkei 225',
     ovIdxStoxx:'Euro Stoxx 50', ovIdxDax:'DAX', ovIdxFtse:'FTSE 100',
+    ovCurLocal:'Local FX',
     // ##CHART_TRANS_EN##
   },
   zh: {
@@ -1119,6 +1127,7 @@ const T = {
     ovGlobalTitle:'全球市场', ovGlobalChartTitle:'全球指数 — 1年相对表现 (起点=100)',
     ovIdxKospi:'韩国KOSPI', ovIdxHsi:'恒生指数', ovIdxNikkei:'日经225',
     ovIdxStoxx:'欧洲斯托克50', ovIdxDax:'德国DAX', ovIdxFtse:'英国富时100',
+    ovCurLocal:'本币',
     // ##CHART_TRANS_ZH##
   },
   ja: {
@@ -1222,6 +1231,7 @@ const T = {
     ovGlobalTitle:'グローバル市場', ovGlobalChartTitle:'グローバル指数 — 1年相対パフォーマンス (開始=100)',
     ovIdxKospi:'韓国KOSPI', ovIdxHsi:'ハンセン指数', ovIdxNikkei:'日経225',
     ovIdxStoxx:'ユーロ・ストックス50', ovIdxDax:'独DAX', ovIdxFtse:'英FTSE100',
+    ovCurLocal:'現地通貨',
     // ##CHART_TRANS_JA##
   },
 };
@@ -2012,8 +2022,9 @@ document.querySelectorAll('.lang-btn').forEach(btn=>{
 // ═══════════════════════════════════════════
 // 마켓 오버뷰 (지수 KPI · 섹터 퍼포먼스 · 매크로)
 // ═══════════════════════════════════════════
-let OV = null;           // market_overview_data.json 캐시
-let ovHorizon = 'ytd';   // 섹터 수익률 기간
+let OV = null;             // market_overview_data.json 캐시
+let ovHorizon = 'ytd';     // 섹터 수익률 기간
+let ovCurrency = 'usd';    // 글로벌 지수 기준 통화 (usd=환율 반영 | local=현지 통화)
 
 const OV_IDX_COLORS  = { sp500: GREEN, nasdaq: BLUE, dow: GOLD, russell: ORANGE };
 const OV_GLOBAL_COLORS = { kospi:'#40C4FF', hsi:'#FF5252', nikkei:'#E91E63', stoxx:'#FFD700', dax:'#00E676', ftse:'#FF9800' };
@@ -2072,7 +2083,7 @@ function renderOvGlobalKpis() {
 }
 
 function renderOvGlobal() {
-  const s = OV.global_series;
+  const s = (ovCurrency === 'usd' && OV.global_series_usd) ? OV.global_series_usd : OV.global_series;
   const traces = [];
   if (s.sp500) traces.push({
     x: s.dates, y: s.sp500, name: ovIdxLabel('sp500'), type: 'scatter', mode: 'lines',
@@ -2154,6 +2165,13 @@ document.getElementById('ov-horizon-btns').addEventListener('click', e => {
   ovHorizon = btn.dataset.h;
   document.querySelectorAll('#ov-horizon-btns .rng-btn').forEach(b => b.classList.toggle('active', b === btn));
   if (OV) renderOvSectors();
+});
+
+document.getElementById('ov-currency-btns').addEventListener('click', e => {
+  const btn = e.target.closest('.rng-btn'); if (!btn) return;
+  ovCurrency = btn.dataset.cur;
+  document.querySelectorAll('#ov-currency-btns .rng-btn').forEach(b => b.classList.toggle('active', b === btn));
+  if (OV) renderOvGlobal();
 });
 
 // ═══════════════════════════════════════════

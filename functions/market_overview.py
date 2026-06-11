@@ -36,6 +36,16 @@ GLOBAL_INDICES = {
     "ftse": "^FTSE",  # 영국
 }
 
+# USD 환산용 환율 — Yahoo 'XXX=X'는 USD당 XXX (지수 ÷ 환율 = USD 기준)
+GLOBAL_FX = {
+    "kospi": "KRW=X",
+    "hsi": "HKD=X",
+    "nikkei": "JPY=X",
+    "stoxx": "EUR=X",
+    "dax": "EUR=X",
+    "ftse": "GBP=X",
+}
+
 SECTORS = {
     "XLK": "Technology",
     "XLF": "Financials",
@@ -131,8 +141,13 @@ def main() -> None:
             }
         )
 
-    print("[overview] 지수 + 섹터 ETF 다운로드...")
-    tickers = list(INDICES.values()) + list(GLOBAL_INDICES.values()) + list(SECTORS.keys())
+    print("[overview] 지수 + 섹터 ETF + 환율 다운로드...")
+    tickers = (
+        list(INDICES.values())
+        + list(GLOBAL_INDICES.values())
+        + list(SECTORS.keys())
+        + sorted(set(GLOBAL_FX.values()))
+    )
     closes = fetch_closes(tickers)
 
     # ── 지수 카드 + 1Y 정규화 시계열 ──
@@ -161,8 +176,10 @@ def main() -> None:
         series_out[key] = to_list(norm.reindex(common).ffill())
 
     # ── 글로벌 지수 카드 + 1Y 정규화 시계열 (미국 영업일 그리드에 정렬, S&P 500 기준선 포함) ──
+    # local: 현지 통화 기준 / usd: 환율 반영 USD 환산 기준
     global_indices = []
     global_out = {"dates": series_out["dates"], "sp500": series_out["sp500"]}
+    global_out_usd = {"dates": series_out["dates"], "sp500": series_out["sp500"]}
     for key, ticker in GLOBAL_INDICES.items():
         s = closes[ticker].dropna()
         global_indices.append(
@@ -175,6 +192,9 @@ def main() -> None:
         )
         aligned = s.reindex(common, method="ffill")
         global_out[key] = to_list((aligned / aligned.iloc[0] * 100).round(2))
+        fx = closes[GLOBAL_FX[key]].dropna().reindex(common, method="ffill")
+        usd = aligned / fx
+        global_out_usd[key] = to_list((usd / usd.iloc[0] * 100).round(2))
 
     # ── 섹터 수익률 + 6M 정규화 시계열 ──
     sectors = []
@@ -198,6 +218,7 @@ def main() -> None:
         "series": series_out,
         "global_indices": global_indices,
         "global_series": global_out,
+        "global_series_usd": global_out_usd,
         "sectors": sectors,
         "sector_series": sector_out,
         "macro": macro,
